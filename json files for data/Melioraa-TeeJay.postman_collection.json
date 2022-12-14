@@ -1,0 +1,75 @@
+{
+	"info": {
+		"_postman_id": "e4d0acc9-1298-4676-bcd5-a952cf0330ff",
+		"name": "Melioraa-TeeJay",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9510240"
+	},
+	"item": [
+		{
+			"name": "http://melioraa.teejay.com/api/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"Admin\",\r\n    \"password\": \"admin@xdoto\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://melioraa.teejay.com/api/login",
+					"protocol": "http",
+					"host": [
+						"melioraa",
+						"teejay",
+						"com"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://melioraa.teejay.com/api/api/dashboard/report?reportToken=1NvDF6gf58cPksX3fT10",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzEwNDYwNTksInVzZXJJZCI6NX0.aVHpVe2eccg0W-fma_ocv55DsiACsLQD5fXN7ZXteB8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://melioraa.teejay.com/api/api/dashboard/report?reportToken=1NvDF6gf58cPksX3fT10",
+					"protocol": "http",
+					"host": [
+						"melioraa",
+						"teejay",
+						"com"
+					],
+					"path": [
+						"api",
+						"api",
+						"dashboard",
+						"report"
+					],
+					"query": [
+						{
+							"key": "reportToken",
+							"value": "1NvDF6gf58cPksX3fT10"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport
+		xmlns="http://jasperreports.sourceforge.net/jasperreports"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Milora_A4" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4a22eb33-dce1-41c7-a961-aacb9d276fae">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MiloraDataAdapter.jrdax"/>
+	<queryString language="json">
+		<![CDATA[milora]]>
+	</queryString>
+	<field name="device" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="Device"/>
+		<fieldDescription><![CDATA[Device]]></fieldDescription>
+	</field>
+	<field name="time" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="time"/>
+		<fieldDescription><![CDATA[Time]]></fieldDescription>
+	</field>
+	<field name="state" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="state"/>
+		<fieldDescription><![CDATA[State]]></fieldDescription>
+	</field>
+	<field name="duration" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="duration"/>
+		<fieldDescription><![CDATA[Duration]]></fieldDescription>
+	</field>
+	<field name="description" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="description"/>
+		<fieldDescription><![CDATA[Description]]></fieldDescription>
+	</field>
+	<field name="comment" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="comment"/>
+		<fieldDescription><![CDATA[Comment]]></fieldDescription>
+	</field>
+	<group name="Device">
+		<groupExpression><![CDATA[$F{device}]]></groupExpression>
+	</group>
+	<group name="Time">
+		<groupExpression><![CDATA[$F{time}]]></groupExpression>
+	</group>
+	<group name="State">
+		<groupExpression><![CDATA[$F{state}]]></groupExpression>
+	</group>
+	<group name="Duration">
+		<groupExpression><![CDATA[$F{duration}]]></groupExpression>
+	</group>
+	<group name="Description">
+		<groupExpression><![CDATA[$F{description}]]></groupExpression>
+	</group>
+	<group name="Comment">
+		<groupExpression><![CDATA[$F{comment}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="57" splitType="Stretch">
+			<staticText>
+				<reportElement x="20" y="10" width="100" height="30" forecolor="#FA2E2A" uuid="03e61389-de99-4be6-b701-fec04caafeb2">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9bbe0b7b-4e16-426c-9e49-9c5cc9bff616"/>
+				</reportElement>
+				<text><![CDATA[Device]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="13" width="100" height="30" uuid="f0fba8e3-a12d-4163-ae77-ab9c79904e58">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="905c253c-f2db-47d1-8bb7-f64da900f52e"/>
+				</reportElement>
+				<text><![CDATA[Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="10" width="100" height="30" uuid="f64feabc-785c-42cc-b6ad-2c12353b33b0">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f3c5cab0-1ee4-4403-a0eb-9098699fc1f6"/>
+				</reportElement>
+				<text><![CDATA[Comment]]></text>
+			</staticText>
+			<line>
+				<reportElement x="10" y="56" width="555" height="1" uuid="72bad921-e486-4bfe-87d7-0f05edcd3dec"/>
+			</line>
+			<staticText>
+				<reportElement x="320" y="10" width="100" height="30" uuid="2e4732a5-184a-4c60-9e9f-446427404262">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aeda7a8e-a11b-483a-86b0-27fdf0a059cd"/>
+				</reportElement>
+				<text><![CDATA[State]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="10" width="100" height="30" uuid="53a6727a-1be6-4d1a-a006-aa0f84e24869">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="491b1722-471d-4f0b-abdf-817d4cc18086"/>
+				</reportElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="37" splitType="Stretch">
+			<textField>
+				<reportElement x="20" y="0" width="100" height="30" forecolor="black" uuid="7ddc2a4f-20e7-4511-8f51-53701412e79c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9bbe0b7b-4e16-426c-9e49-9c5cc9bff616"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{device}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="0" width="100" height="30" uuid="f474d776-baad-44fd-89b3-791aa0370ff9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="905c253c-f2db-47d1-8bb7-f64da900f52e"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{time}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="0" width="100" height="30" uuid="b16b9a6e-e79f-45e4-a332-029ac8266cca">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f3c5cab0-1ee4-4403-a0eb-9098699fc1f6"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{comment}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="100" height="30" uuid="218ab645-bccd-46a8-90e4-342b6fb9100c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="aeda7a8e-a11b-483a-86b0-27fdf0a059cd"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{state}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="3" width="100" height="30" uuid="b412bc93-8ae2-4d00-94f8-c416139f6c58">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="491b1722-471d-4f0b-abdf-817d4cc18086"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
