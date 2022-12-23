@@ -4,11 +4,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
+import com.codingboot.entity.Device;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import com.codingboot.entity.Products;
 import com.codingboot.entity.Milora;
@@ -20,8 +21,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 @RestController
@@ -190,6 +189,30 @@ public class InvoiceController {
 		headers.add("Content-Disposition", "inline; filename=citiesreport.pdf");
 
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
+	}
+
+
+	@GetMapping(value = "/pdf5",
+			consumes="application/json",
+			produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<byte[]> downloadInvoice5(@RequestHeader Map<String, String> requestHeaders,
+												   @RequestBody List<Device> listOfDevice) throws JRException, IOException {
+
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfDevice,false);
+
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("total", "9999");
+
+		JasperReport compileReport = JasperCompileManager
+				.compileReport(new FileInputStream("src/main/resources/xoupdatedreport.jrxml"));
+
+		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
+
+		byte data[] = JasperExportManager.exportReportToPdf(jasperPrint);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=citiesreport.pdf");
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
+
 	}
 
 }
