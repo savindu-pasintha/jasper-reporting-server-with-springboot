@@ -1,7 +1,10 @@
 package com.codingboot.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import com.codingboot.entity.Device;
@@ -205,6 +208,223 @@ public class InvoiceController {
 
 		JasperReport compileReport = JasperCompileManager
 				.compileReport(new FileInputStream("src/main/resources/xoupdatedreport.jrxml"));
+
+		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
+
+		byte data[] = JasperExportManager.exportReportToPdf(jasperPrint);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=citiesreport.pdf");
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
+
+	}
+
+	@GetMapping(value = "/pdf6",
+			consumes="application/json",
+			produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<byte[]> downloadInvoice6(@RequestHeader Map<String, String> requestHeaders,
+												   @RequestBody List<Device> listOfDevice) throws JRException, IOException {
+
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfDevice,false);
+
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("total", "9999");
+
+
+		String string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->\n" +
+				"<jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd\" name=\"xoupdatedreport\" pageWidth=\"595\" pageHeight=\"842\" columnWidth=\"555\" leftMargin=\"20\" rightMargin=\"20\" topMargin=\"20\" bottomMargin=\"20\" uuid=\"fee13ff4-cabf-4168-9507-854bbe91b32b\">\n" +
+				"\t<property name=\"com.jaspersoft.studio.data.defaultdataadapter\" value=\"xoupdatedreportendpoint.jrdax\"/>\n" +
+				"\t<queryString language=\"json\">\n" +
+				"\t\t<![CDATA[data]]>\n" +
+				"\t</queryString>\n" +
+				"\t<field name=\"name\" class=\"java.lang.String\">\n" +
+				"\t\t<property name=\"net.sf.jasperreports.json.field.expression\" value=\"name\"/>\n" +
+				"\t\t<fieldDescription><![CDATA[name]]></fieldDescription>\n" +
+				"\t</field>\n" +
+				"\t<field name=\"description\" class=\"java.lang.String\">\n" +
+				"\t\t<property name=\"net.sf.jasperreports.json.field.expression\" value=\"description\"/>\n" +
+				"\t\t<fieldDescription><![CDATA[description]]></fieldDescription>\n" +
+				"\t</field>\n" +
+				"\t<field name=\"parent\" class=\"java.lang.Integer\">\n" +
+				"\t\t<property name=\"net.sf.jasperreports.json.field.expression\" value=\"parent\"/>\n" +
+				"\t\t<fieldDescription><![CDATA[parent]]></fieldDescription>\n" +
+				"\t</field>\n" +
+				"\t<field name=\"id\" class=\"java.lang.Integer\">\n" +
+				"\t\t<property name=\"net.sf.jasperreports.json.field.expression\" value=\"id\"/>\n" +
+				"\t\t<fieldDescription><![CDATA[id]]></fieldDescription>\n" +
+				"\t</field>\n" +
+				"\t<field name=\"enable\" class=\"java.lang.String\">\n" +
+				"\t\t<property name=\"net.sf.jasperreports.json.field.expression\" value=\"enable\"/>\n" +
+				"\t\t<fieldDescription><![CDATA[enable]]></fieldDescription>\n" +
+				"\t</field>\n" +
+				"\t<field name=\"token\" class=\"java.lang.String\">\n" +
+				"\t\t<property name=\"net.sf.jasperreports.json.field.expression\" value=\"token\"/>\n" +
+				"\t\t<fieldDescription><![CDATA[token]]></fieldDescription>\n" +
+				"\t</field>\n" +
+				"\t<group name=\"name\">\n" +
+				"\t\t<groupExpression><![CDATA[$F{name}]]></groupExpression>\n" +
+				"\t</group>\n" +
+				"\t<group name=\"description\">\n" +
+				"\t\t<groupExpression><![CDATA[$F{description}]]></groupExpression>\n" +
+				"\t</group>\n" +
+				"\t<group name=\"parent\">\n" +
+				"\t\t<groupExpression><![CDATA[$F{parent}]]></groupExpression>\n" +
+				"\t</group>\n" +
+				"\t<group name=\"id\">\n" +
+				"\t\t<groupExpression><![CDATA[$F{id}]]></groupExpression>\n" +
+				"\t</group>\n" +
+				"\t<group name=\"enable\">\n" +
+				"\t\t<groupExpression><![CDATA[$F{enable}]]></groupExpression>\n" +
+				"\t</group>\n" +
+				"\t<group name=\"token\">\n" +
+				"\t\t<groupExpression><![CDATA[$F{token}]]></groupExpression>\n" +
+				"\t</group>\n" +
+				"\t<background>\n" +
+				"\t\t<band splitType=\"Stretch\"/>\n" +
+				"\t</background>\n" +
+				"\t<title>\n" +
+				"\t\t<band height=\"79\" splitType=\"Stretch\">\n" +
+				"\t\t\t<staticText>\n" +
+				"\t\t\t\t<reportElement x=\"180\" y=\"30\" width=\"231\" height=\"30\" uuid=\"9341b823-6467-432e-bfa3-228327830486\"/>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font size=\"20\" isBold=\"true\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<text><![CDATA[XO DEVICES REPORT]]></text>\n" +
+				"\t\t\t</staticText>\n" +
+				"\t\t</band>\n" +
+				"\t</title>\n" +
+				"\t<pageHeader>\n" +
+				"\t\t<band height=\"1\" splitType=\"Stretch\"/>\n" +
+				"\t</pageHeader>\n" +
+				"\t<columnHeader>\n" +
+				"\t\t<band height=\"61\" splitType=\"Stretch\">\n" +
+				"\t\t\t<staticText>\n" +
+				"\t\t\t\t<reportElement x=\"-20\" y=\"0\" width=\"100\" height=\"30\" forecolor=\"#F7192B\" uuid=\"9a716150-3d10-4d21-b16d-84d518e80381\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"043260ea-22d7-402b-ac6d-bf471ca787dd\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font size=\"12\" isBold=\"true\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<text><![CDATA[id]]></text>\n" +
+				"\t\t\t</staticText>\n" +
+				"\t\t\t<staticText>\n" +
+				"\t\t\t\t<reportElement x=\"80\" y=\"0\" width=\"100\" height=\"30\" forecolor=\"#F7192B\" uuid=\"8d7039dd-7c17-434d-88fd-f03535cc85d3\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"dc8f8757-4342-42c6-8be0-aa2b716ed37e\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font size=\"12\" isBold=\"true\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<text><![CDATA[name]]></text>\n" +
+				"\t\t\t</staticText>\n" +
+				"\t\t\t<staticText>\n" +
+				"\t\t\t\t<reportElement x=\"180\" y=\"0\" width=\"100\" height=\"30\" forecolor=\"#F7192B\" uuid=\"7e8fb3d2-13bf-4597-83a0-80eb9ebfc776\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"4741a235-5d7c-409e-942c-b39a8a25a18d\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font size=\"12\" isBold=\"true\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<text><![CDATA[token]]></text>\n" +
+				"\t\t\t</staticText>\n" +
+				"\t\t\t<staticText>\n" +
+				"\t\t\t\t<reportElement x=\"280\" y=\"0\" width=\"100\" height=\"30\" forecolor=\"#F7192B\" uuid=\"d751d010-2cca-4833-9b43-981bb2244e9b\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"dc6dd737-ba67-4ec9-be1f-1e826fe345e9\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font size=\"12\" isBold=\"true\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<text><![CDATA[enable]]></text>\n" +
+				"\t\t\t</staticText>\n" +
+				"\t\t\t<staticText>\n" +
+				"\t\t\t\t<reportElement x=\"380\" y=\"0\" width=\"100\" height=\"30\" forecolor=\"#F7192B\" uuid=\"549a3ca7-0906-4754-96dc-fe0a99771c7e\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"578de257-6eb8-44bd-9947-81bace34d11f\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font size=\"12\" isBold=\"true\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<text><![CDATA[parent]]></text>\n" +
+				"\t\t\t</staticText>\n" +
+				"\t\t\t<staticText>\n" +
+				"\t\t\t\t<reportElement x=\"480\" y=\"0\" width=\"100\" height=\"30\" forecolor=\"#F7192B\" uuid=\"7f162556-d224-4dbf-9706-61a02e5b38b0\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"2c41e31e-72d6-4c7e-863c-856bad20646b\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font size=\"12\" isBold=\"true\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<text><![CDATA[description]]></text>\n" +
+				"\t\t\t</staticText>\n" +
+				"\t\t</band>\n" +
+				"\t</columnHeader>\n" +
+				"\t<detail>\n" +
+				"\t\t<band height=\"126\" splitType=\"Stretch\">\n" +
+				"\t\t\t<textField>\n" +
+				"\t\t\t\t<reportElement x=\"-20\" y=\"80\" width=\"100\" height=\"30\" uuid=\"5ca045e1-0f5c-4cca-bf1f-436eea0b679a\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"043260ea-22d7-402b-ac6d-bf471ca787dd\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font isBold=\"false\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>\n" +
+				"\t\t\t</textField>\n" +
+				"\t\t\t<textField>\n" +
+				"\t\t\t\t<reportElement x=\"80\" y=\"80\" width=\"100\" height=\"30\" uuid=\"f93da916-d9ac-4153-bda8-8aa893c63515\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"dc8f8757-4342-42c6-8be0-aa2b716ed37e\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font isBold=\"false\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>\n" +
+				"\t\t\t</textField>\n" +
+				"\t\t\t<textField>\n" +
+				"\t\t\t\t<reportElement x=\"180\" y=\"80\" width=\"100\" height=\"30\" uuid=\"e1471671-eafc-4181-9bc4-d87d07d5cf2a\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"4741a235-5d7c-409e-942c-b39a8a25a18d\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font isBold=\"false\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<textFieldExpression><![CDATA[$F{token}]]></textFieldExpression>\n" +
+				"\t\t\t</textField>\n" +
+				"\t\t\t<textField>\n" +
+				"\t\t\t\t<reportElement x=\"280\" y=\"80\" width=\"100\" height=\"30\" uuid=\"ddf8fd47-c601-4e1b-942b-95ad74d16079\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"dc6dd737-ba67-4ec9-be1f-1e826fe345e9\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font isBold=\"false\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<textFieldExpression><![CDATA[$F{enable}]]></textFieldExpression>\n" +
+				"\t\t\t</textField>\n" +
+				"\t\t\t<textField>\n" +
+				"\t\t\t\t<reportElement x=\"380\" y=\"80\" width=\"100\" height=\"30\" uuid=\"02318ebf-e887-4f99-ba0e-c18b7c21a178\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"578de257-6eb8-44bd-9947-81bace34d11f\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font isBold=\"false\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<textFieldExpression><![CDATA[$F{parent}]]></textFieldExpression>\n" +
+				"\t\t\t</textField>\n" +
+				"\t\t\t<textField>\n" +
+				"\t\t\t\t<reportElement x=\"480\" y=\"80\" width=\"100\" height=\"30\" uuid=\"8f09d0bb-7c8f-4a87-86d7-fcaaa6945ab1\">\n" +
+				"\t\t\t\t\t<property name=\"com.jaspersoft.studio.spreadsheet.connectionID\" value=\"2c41e31e-72d6-4c7e-863c-856bad20646b\"/>\n" +
+				"\t\t\t\t</reportElement>\n" +
+				"\t\t\t\t<textElement textAlignment=\"Center\">\n" +
+				"\t\t\t\t\t<font isBold=\"false\"/>\n" +
+				"\t\t\t\t</textElement>\n" +
+				"\t\t\t\t<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>\n" +
+				"\t\t\t</textField>\n" +
+				"\t\t</band>\n" +
+				"\t</detail>\n" +
+				"\t<columnFooter>\n" +
+				"\t\t<band splitType=\"Stretch\"/>\n" +
+				"\t</columnFooter>\n" +
+				"\t<pageFooter>\n" +
+				"\t\t<band splitType=\"Stretch\"/>\n" +
+				"\t</pageFooter>\n" +
+				"\t<summary>\n" +
+				"\t\t<band splitType=\"Stretch\"/>\n" +
+				"\t</summary>\n" +
+				"</jasperReport>\n";
+
+		InputStream inputStream = new ByteArrayInputStream(string.getBytes(Charset.forName("UTF-8")));
+		JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 
 		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
