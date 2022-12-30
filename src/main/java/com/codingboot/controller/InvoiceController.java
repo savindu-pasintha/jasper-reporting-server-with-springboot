@@ -1,10 +1,11 @@
 package com.codingboot.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import com.codingboot.entity.Device;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.codingboot.entity.Products;
@@ -24,6 +26,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RestController
@@ -435,4 +440,38 @@ public class InvoiceController {
 
 	}
 
+
+	@PostMapping("/upload")
+	public  ModelAndView  uploadFile(@RequestParam("file") MultipartFile file,
+									 @RequestParam("reportName") String reportName,
+									 @RequestParam("apiName") String apiName,
+							 RedirectAttributes attributes) {
+		 System.out.println(apiName);
+		 System.out.println(reportName);
+		// check if file is empty
+		if (file.isEmpty()) {
+			attributes.addFlashAttribute("message", "Please select a file to upload.");
+			return new ModelAndView("redirect:/");
+		}
+
+		// normalize the file path
+		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		// save the file on the local file system
+		try {
+			//if not exist create folder for specific client
+			File theDir = new File("./client-folder");
+			if (!theDir.exists()){
+				theDir.mkdirs();
+			}
+
+		   //Path path = Paths.get("D:\\spring-data-jpa-example-master\\src\\main\\resources\\" + reportName);
+			Path path = Paths.get("./client-folder/"+reportName);
+			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// return success response
+		attributes.addFlashAttribute("message", "You successfully uploaded " + reportName + '!');
+		return new ModelAndView("redirect:/");
+	}
 }
