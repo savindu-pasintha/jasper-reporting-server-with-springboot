@@ -3,41 +3,117 @@
 <head>
     <title>Spring Boot & Thymeleaf File Upload</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
 </head>
 <body>
-
-<section class="my-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-                <h2>Upload  Your Report</h2>
-                <p th:text="${message}" th:if="${message ne null}" class="alert alert-primary"></p>
-
-                <form method="post" th:action="@{/upload}" enctype="multipart/form-data">
-                    <div class="form-group">
-                            <h4 class="text-primary">Select dataset</h4>
-                            <select required id="apiName" name="apiName"
-                                    class="form-control form-control-sm">
-                                <option value="1">https://www.@.@/dataset 1</option>
-                                <option value="2">https://www.@.@/dataset 2</option>
-                                <option value="3">https://www.@.@/dataset 3</option>
-                            </select>
+<div class="container-fluid" id="hei" style="height: 100vh">
+    <div class="row" style="height: 100vh">
+        <div class="col-2 bg-dark" style="height: 100vh">
+            <div class="row pt-5"> <button id="home_btn" class="btn btn-primary form-control m-2">Home</button></div>
+            <div class="row pt-5"> <button id="report_btn" class="btn btn-primary form-control m-2">Reports</button></div>
+            <div class="row pt-5"> <button id="upload_btn" class="btn btn-primary form-control m-2">Upload Report</button></div>
+        </div>
+        <div class="col-10 bg-light" id="content_home" style="height: 100vh">Home</div>
+        <div class="col-10 bg-light" id="content_report" style="height: 100vh">
+            <div class="row" id="report_card"></div>
+        </div>
+        <div class="col-10 bg-light" id="content_upload" style="height: 100vh">
+            <section class="my-5">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8 mx-auto">
+                            <h2>Upload  Your Report</h2>
+                            <p th:text="${message}" th:if="${message ne null}" class="alert alert-primary"></p>
+                            <form id="upload_form" method="post" th:action="@{/upload}" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <h4 class="text-primary">select dataset</h4>
+                                    <select required id="apiName" name="apiName"
+                                            class="form-control form-control-sm">
+                                        <option value="1">https://www.@.@/dataset 1</option>
+                                        <option value="2">https://www.@.@/dataset 2</option>
+                                        <option value="3">https://www.@.@/dataset 3</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <h4 class="text-primary">report name enter</h4>
+                                    <input placeholder="report1.jrxml" required
+                                           type="text" name="reportName" class="form-control form-control-sm">
+                                </div>
+                                <div class="form-group">
+                                    <h4 class="text-primary">report description</h4>
+                                    <input placeholder="write description" required
+                                           type="text" name="reportName" class="form-control form-control-sm">
+                                </div>
+                                <div class="form-group">
+                                    <input required accept=".jrxml,.png,.jpg,.pdf"
+                                           type="file" name="file" class="form-control-file">
+                                </div>
+                                <!--type="submit" -->
+                                <button id="submit_btn"  type="btn" class="btn btn-primary">Upload File</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <h4 class="text-primary">Report name enter</h4>
-                        <input placeholder="report1.jrxml" required
-                               type="text" name="reportName" class="form-control form-control-sm">
-                    </div>
-                    <div class="form-group">
-                        <input required accept=".jrxml,.png,.jpg,.pdf"
-                               type="file" name="file" class="form-control-file">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Upload File</button>
-                </form>
-            </div>
+                </div>
+            </section>
         </div>
     </div>
-</section>
+</div>
 
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $("#content_report").hide();
+        $("#content_upload").hide();
+
+        $("#home_btn").click(()=>{
+            $("#content_home").show();
+            $("#content_report").hide();
+            $("#content_upload").hide();
+        });
+
+        $("#report_btn").click(()=>{
+            let report_card = ``;
+            for(let i=0; i<8; i++){
+                report_card = report_card + `<div class="col-sm-12 col-md-3">
+                    <div class="card mt-5">
+                        <div class="card-body">
+                            <h5 class="card-title">Report ${i}</h5>
+                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                            <a href="#" class="btn btn-primary">Open</a>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            document.getElementById("report_card").innerHTML = report_card
+
+            $("#content_report").show();
+            $("#content_home").hide();
+            $("#content_upload").hide();
+        });
+
+        $("#upload_btn").click(()=>{
+            $("#content_upload").show();
+            $("#content_home").hide();
+            $("#content_report").hide();
+        });
+
+        $("#submit_btn").click(()=>{
+            // (A) GET FORM DATA
+            var form = document.getElementById("upload_form");
+            var data = new FormData(form);
+            // (B) FETCH
+            fetch("http://localhost:8082/upload2", {
+                method: "post",
+                body: data
+            })
+                .then((res) => { return res; })
+                .then((txt) => { console.log(txt); })
+                .catch((err) => { console.log(err); });
+            // (C) PREVENT HTML FORM SUBMIT
+            return false;
+        })
+    });
+</script>
 </html>

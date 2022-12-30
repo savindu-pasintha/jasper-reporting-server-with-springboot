@@ -8,7 +8,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
+import com.codingboot.model.ReportTable;
+import com.codingboot.service.ReportTableService;
 import com.codingboot.entity.Device;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +33,21 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRXmlExporter;
+import net.sf.jasperreports.export.Exporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
 @Controller
 @RestController
 public class InvoiceController {
+
+	@Autowired
+	private ReportTableService reportTableService;
 
 	@GetMapping(value = "/datasource")
 	public Map<String, List> selectors(@RequestHeader Map<String, String> headers, String data) {
@@ -433,13 +448,117 @@ public class InvoiceController {
 
 		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
+
 		byte data[] = JasperExportManager.exportReportToPdf(jasperPrint);
+		//String sxml = JasperExportManager.exportReportToXml(jasperPrint);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Disposition", "inline; filename=citiesreport.pdf");
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
 
 	}
 
+	//export as xml types
+	@GetMapping(value = "/pdf7",
+			consumes="application/json")
+	public ResponseEntity<String> downloadInvoice7() throws JRException, IOException {
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(Arrays.asList(
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(125, "Headphone", 54884)
+		), false);
+
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("total", "9999");
+
+		JasperReport compileReport = JasperCompileManager
+				.compileReport(new FileInputStream("src/main/resources/simpleCDS.jrxml"));
+
+		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
+
+		// JasperExportManager.exportReportToPdfFile(jasperPrint,
+		// System.currentTimeMillis() + ".pdf");
+
+		//byte data[] = JasperExportManager.exportReportToPdf(jasperPrint);
+       String data  = JasperExportManager.exportReportToXml(jasperPrint);
+		//return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_XML).body(data);
+		//String data  = JasperExportManager.exportReportToHtmlFile();
+		System.err.println(data);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=citiesreport.xml");
+
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_XML).body(data);
+	}
+
+	//export as html and other types
+	@GetMapping(value = "/pdf8",
+			consumes="application/json")
+	public ResponseEntity<byte[]> downloadInvoice8() throws JRException, IOException {
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(Arrays.asList(
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(125, "Headphone", 54884)
+		), false);
+
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("total", "9999");
+
+		JasperReport compileReport = JasperCompileManager
+				.compileReport(new FileInputStream("src/main/resources/simpleCDS.jrxml"));
+
+		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
+
+		final Exporter exporter;
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		boolean html = false;
+        String format = "HTML";
+
+		switch (format) {
+			case "HTML":
+				exporter = new HtmlExporter();
+				exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
+				html = true;
+				break;
+
+			case "CSV":
+				exporter = new JRCsvExporter();
+				break;
+
+			case "XML":
+				exporter = new JRXmlExporter();
+				break;
+
+			case "XLSX":
+				exporter = new JRXlsxExporter();
+				break;
+
+			case "PDF":
+				exporter = new JRPdfExporter();
+				break;
+
+			default:
+				throw new JRException("Unknown report format: ");
+		}
+
+		if (!html) {
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
+		}
+
+		exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+		exporter.exportReport();
+
+		byte [] data = out.toByteArray();
+
+		//String data  = JasperExportManager.exportReportToXml(jasperPrint);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=citiesreport.html");
+
+		return ResponseEntity.ok().headers(headers).body(data);
+	}
 
 	@PostMapping("/upload")
 	public  ModelAndView  uploadFile(@RequestParam("file") MultipartFile file,
@@ -474,4 +593,59 @@ public class InvoiceController {
 		attributes.addFlashAttribute("message", "You successfully uploaded " + reportName + '!');
 		return new ModelAndView("redirect:/");
 	}
+	@PostMapping("/upload2")
+	public Map<String, List>   uploadFile2(@RequestParam("file") MultipartFile file,
+										   @RequestParam("reportName") String reportName,
+										   @RequestParam("apiName") String apiName,
+										   @RequestParam("description") String description,
+										   RedirectAttributes attributes) {
+		System.out.println(apiName);
+		System.out.println(reportName);
+
+		HashMap<String, List> map = new HashMap<>();
+		HashMap<String,String> obj = new HashMap<>();
+		List<Map> arr = new ArrayList<>();
+		obj.put("dataset",apiName);
+		obj.put("reportName", reportName);
+		obj.put("description", description);
+
+		// check if file is empty
+		if (file.isEmpty()) {
+			attributes.addFlashAttribute("message", "Please select a file to upload.");
+			obj.put("file", "no file");
+		}
+		obj.put("file", "include file");
+
+		// normalize the file path
+		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		// save the file on the local file system
+		try {
+			//if not exist create folder for specific client
+			File theDir = new File("./client-folder");
+			if (!theDir.exists()){
+				theDir.mkdirs();
+				obj.put("folder", "created");
+			}
+			obj.put("folder", "access previous folder");
+
+			//Path path = Paths.get("D:\\spring-data-jpa-example-master\\src\\main\\resources\\" + reportName);
+			Path path = Paths.get("./client-folder/"+reportName);
+			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+			obj.put("upload", "success");
+		} catch (IOException e) {
+			obj.put("err", e.getMessage());
+			e.printStackTrace();
+		}
+		// return success response
+		attributes.addFlashAttribute("message", "You successfully uploaded " + reportName + '!');
+		arr.add(obj);
+		map.put("row",arr);
+		return map;
+	}
+
+	@PostMapping("/update3")
+	public ReportTable addRecord(@RequestBody ReportTable reportTable){
+		return reportTableService.addReportTable(reportTable);
+	}
+
 }
