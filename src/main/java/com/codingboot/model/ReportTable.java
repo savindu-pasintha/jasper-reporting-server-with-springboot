@@ -32,4 +32,7 @@ public class ReportTable {
 
     @Column(name = "user_id")
     private String userId;
+
+    @Column(name = "apiendpoint")
+    private String apiendpoint;
 }

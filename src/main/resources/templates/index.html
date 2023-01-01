@@ -12,50 +12,9 @@
             <div class="row pt-5"> <button id="home_btn" class="btn btn-primary form-control m-2">Home</button></div>
             <div class="row pt-5"> <button id="report_btn" class="btn btn-primary form-control m-2">Reports</button></div>
             <div class="row pt-5"> <button id="upload_btn" class="btn btn-primary form-control m-2">Upload Report</button></div>
+            <div class="row pt-5"> <button id="view_btn" class="btn btn-primary form-control m-2">View</button></div>
         </div>
         <div class="col-10 bg-light" id="content_home" style="height: 100vh">Home</div>
-        <div class="col-10 bg-light" id="content_report" style="height: 100vh">
-            <div class="row" id="report_card"></div>
-        </div>
-        <div class="col-10 bg-light" id="content_upload" style="height: 100vh">
-            <section class="my-5">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-8 mx-auto">
-                            <h2>Upload  Your Report</h2>
-                            <p th:text="${message}" th:if="${message ne null}" class="alert alert-primary"></p>
-                            <form id="upload_form" method="post" th:action="@{/upload}" enctype="multipart/form-data">
-                                <div class="form-group">
-                                    <h4 class="text-primary">select dataset</h4>
-                                    <select required id="apiName" name="apiName"
-                                            class="form-control form-control-sm">
-                                        <option value="1">https://www.@.@/dataset 1</option>
-                                        <option value="2">https://www.@.@/dataset 2</option>
-                                        <option value="3">https://www.@.@/dataset 3</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <h4 class="text-primary">report name enter</h4>
-                                    <input placeholder="report1.jrxml" required
-                                           type="text" name="reportName" class="form-control form-control-sm">
-                                </div>
-                                <div class="form-group">
-                                    <h4 class="text-primary">report description</h4>
-                                    <input placeholder="write description" required
-                                           type="text" name="reportName" class="form-control form-control-sm">
-                                </div>
-                                <div class="form-group">
-                                    <input required accept=".jrxml,.png,.jpg,.pdf"
-                                           type="file" name="file" class="form-control-file">
-                                </div>
-                                <!--type="submit" -->
-                                <button id="submit_btn"  type="btn" class="btn btn-primary">Upload File</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
     </div>
 </div>
 
@@ -63,40 +22,117 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-
-        $("#content_report").hide();
-        $("#content_upload").hide();
+        //html
+        async function reportFetch() {
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            const raw2 = "{\r\n [\r\n        {\r\n            \"name\": \"J125\",\r\n            \"description\": \"J125 - Jacquard machine\",\r\n            \"parent\": 0,\r\n            \"id\": 1,\r\n            \"enable\": true,\r\n            \"token\": \"J125WFT\"\r\n        },\r\n        {\r\n            \"name\": \"J125 Data logger\",\r\n            \"description\": \"Data logger for Jacquard machine\",\r\n            \"parent\": 1,\r\n            \"id\": 2,\r\n            \"enable\": true,\r\n            \"token\": \"J125DL\"\r\n        }\r\n ]\r\n\r\n}";
+            const requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                //body: raw2,
+                redirect: 'follow'
+            };
+            await fetch("http://localhost:8082/pdf8", requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    if (result != null && result != undefined) {
+                        console.log(result)
+                        document.getElementById("content_home").innerHTML = result;
+                        $("#content_home").show();
+                    }
+                })
+                .catch(error => console.log('error', error));
+        };
 
         $("#home_btn").click(()=>{
             $("#content_home").show();
-            $("#content_report").hide();
-            $("#content_upload").hide();
         });
 
         $("#report_btn").click(()=>{
+            $("#content_home").hide();
             let report_card = ``;
-            for(let i=0; i<8; i++){
-                report_card = report_card + `<div class="col-sm-12 col-md-3">
+
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+
+            fetch("http://localhost:8082/findAllReports", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result)
+                    for(let i=0; i<result.length; i++){
+                        report_card = report_card + `<div class="col-sm-12 col-md-3">
                     <div class="card mt-5">
                         <div class="card-body">
-                            <h5 class="card-title">Report ${i}</h5>
-                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                            <a href="#" class="btn btn-primary">Open</a>
+                            <h5 class="card-title">Report ${result[i]?.id} ${result[i]?.name}</h5>
+                            <p class="card-text">description : ${result[i]?.description}</p>
+                            <p class="card-text">report path : ${result[i]?.path}</p>
+                             <p class="card-text">endpoint : ${result[i]?.endpoint}</p>
+                            <p class="card-text">createdAt : ${result[i]?.timestamp}</p>
+                            <a href="#" class="btn btn-primary" id="openBtnId" >Open</a>
                         </div>
                     </div>
                 </div>`;
-            }
-            document.getElementById("report_card").innerHTML = report_card
+                    }
+                    document.getElementById("content_home").innerHTML = `<div class="row" id="report_card">${report_card}</div>`;
+                    $("#content_home").show();
 
-            $("#content_report").show();
-            $("#content_home").hide();
-            $("#content_upload").hide();
+                })
+                .catch(error => console.log('error', error));
         });
 
         $("#upload_btn").click(()=>{
-            $("#content_upload").show();
             $("#content_home").hide();
-            $("#content_report").hide();
+            document.getElementById("content_home").innerHTML = ` <section class="my-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <h2>Upload  Your Report</h2>
+                    <p class="alert alert-primary"></p>
+                    <form id="upload_form" method="post" action="/upload2" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <h4 class="text-primary">select dataset</h4>
+                            <select required id="apiName" name="apiName"
+                                    class="form-control form-control-sm">
+                                <option value="1">https://www.@.@/dataset 1</option>
+                                <option value="2">https://www.@.@/dataset 2</option>
+                                <option value="3">https://www.@.@/dataset 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <h4 class="text-primary">report name enter</h4>
+                            <input placeholder="report1.jrxml" required
+                                   type="text" name="reportName" class="form-control form-control-sm">
+                        </div>
+                        <div class="form-group">
+                            <h4 class="text-primary">report description</h4>
+                            <input placeholder="write description" required
+                                   type="text" name="reportName" class="form-control form-control-sm">
+                        </div>
+                        <div class="form-group">
+                            <input required accept=".jrxml,.png,.jpg,.pdf"
+                                   type="file" name="file" class="form-control-file">
+                        </div>
+                        <!--type="submit" -->
+                        <button id="submit_btn"  type="btn" class="btn btn-primary">Upload File</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>`;
+            $("#content_home").show();
+        });
+
+        $("#view_btn").click(()=>{
+            $("#content_home").hide();
+            reportFetch();
+        });
+
+        $("#openBtnId").click(()=>{
+            $("#content_home").hide();
+            reportFetch();
         });
 
         $("#submit_btn").click(()=>{

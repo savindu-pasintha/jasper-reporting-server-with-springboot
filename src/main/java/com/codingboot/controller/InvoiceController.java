@@ -632,6 +632,9 @@ public class InvoiceController {
 			Path path = Paths.get("./client-folder/"+reportName);
 			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 			obj.put("upload", "success");
+
+			ReportTable reportTable = new ReportTable(1,reportName,description,"./client-folder/"+reportName,new Date().toString(),"20",apiName);
+			reportTableService.addReportTable(reportTable);
 		} catch (IOException e) {
 			obj.put("err", e.getMessage());
 			e.printStackTrace();
@@ -646,6 +649,11 @@ public class InvoiceController {
 	@PostMapping("/update3")
 	public ReportTable addRecord(@RequestBody ReportTable reportTable){
 		return reportTableService.addReportTable(reportTable);
+	}
+
+	@GetMapping("/findAllReports")
+	public List<ReportTable> findAllReports(){
+		return reportTableService.fetchAllReportTable();
 	}
 
 }
