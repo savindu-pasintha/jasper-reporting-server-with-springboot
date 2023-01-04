@@ -18,5 +18,8 @@ public class ReportTableService {
     public List<ReportTable> fetchAllReportTable(){
         return reportTableRepository.findAll();
     }
+    public void  deleteByIdReport(int id){
+        reportTableRepository.deleteById(id);
+    }
 
 }

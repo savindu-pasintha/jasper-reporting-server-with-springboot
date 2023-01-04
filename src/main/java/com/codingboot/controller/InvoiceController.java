@@ -13,6 +13,7 @@ import com.codingboot.service.ReportTableService;
 import com.codingboot.entity.Device;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,9 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 @Controller
 @RestController
 public class InvoiceController {
+
+	@Autowired
+	private Environment env;
 
 	@Autowired
 	private ReportTableService reportTableService;
@@ -493,9 +497,15 @@ public class InvoiceController {
 	}
 
 	//export as html and other types
-	@GetMapping(value = "/pdf8",
+	@PostMapping(value = "/pdf8",
 			consumes="application/json")
-	public ResponseEntity<byte[]> downloadInvoice8() throws JRException, IOException {
+	public ResponseEntity<byte[]> downloadInvoice8(@RequestBody ReportTable reportTable) throws JRException, IOException {
+		final Exporter exporter;
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		boolean html = false;
+		JasperReport compileReport = null;
+		String format = "HTML";
+
 		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(Arrays.asList(
 				new Products(121, "gihan", 54884),
 				new Products(122, "Mouse", 54884),
@@ -504,18 +514,17 @@ public class InvoiceController {
 				new Products(125, "Headphone", 54884)
 		), false);
 
+		//System.out.println("reportLocation : "+reportTable.getPath());
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("total", "9999");
 
-		JasperReport compileReport = JasperCompileManager
-				.compileReport(new FileInputStream("src/main/resources/simpleCDS.jrxml"));
+		File theDir = new File(reportTable.getPath());
+		if (theDir.exists()){
+			compileReport = JasperCompileManager
+					.compileReport(new FileInputStream(reportTable.getPath()));
+		}
 
 		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
-
-		final Exporter exporter;
-		final ByteArrayOutputStream out = new ByteArrayOutputStream();
-		boolean html = false;
-        String format = "HTML";
 
 		switch (format) {
 			case "HTML":
@@ -594,10 +603,11 @@ public class InvoiceController {
 		return new ModelAndView("redirect:/");
 	}
 	@PostMapping("/upload2")
-	public Map<String, List>   uploadFile2(@RequestParam("file") MultipartFile file,
+	public ModelAndView   uploadFile2(@RequestParam("file") MultipartFile file,
 										   @RequestParam("reportName") String reportName,
 										   @RequestParam("apiName") String apiName,
 										   @RequestParam("description") String description,
+										   @RequestParam("clientFolderId") String clientFolderId,
 										   RedirectAttributes attributes) {
 		System.out.println(apiName);
 		System.out.println(reportName);
@@ -621,20 +631,28 @@ public class InvoiceController {
 		// save the file on the local file system
 		try {
 			//if not exist create folder for specific client
-			File theDir = new File("./client-folder");
-			if (!theDir.exists()){
-				theDir.mkdirs();
-				obj.put("folder", "created");
+			String report_folder_path = env.getProperty("report_folder_path");
+			if(!report_folder_path.isEmpty() && !clientFolderId.isEmpty()) {
+				File theDir = new File(report_folder_path+"/"+clientFolderId);
+				if (!theDir.exists()) {
+					theDir.mkdirs();
+					obj.put("client_folder_created", report_folder_path+"/"+clientFolderId);
+				}
+
+				obj.put("client_folder_access", "access previous folder");
+
+				//Path path = Paths.get("D:\\spring-data-jpa-example-master\\src\\main\\resources\\" + reportName);
+				if(!clientFolderId.isEmpty() && !reportName.isEmpty()) {
+					String fileSavedPath = report_folder_path +"/"+ clientFolderId+"/" +Math.random()+reportName;
+					Path path = Paths.get(fileSavedPath);
+					Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+					obj.put("file_upload",fileSavedPath);
+
+					ReportTable reportTable = new ReportTable(1, reportName, description, fileSavedPath, new Date().toString(), "20", apiName,clientFolderId);
+					reportTableService.addReportTable(reportTable);
+				}
 			}
-			obj.put("folder", "access previous folder");
-
-			//Path path = Paths.get("D:\\spring-data-jpa-example-master\\src\\main\\resources\\" + reportName);
-			Path path = Paths.get("./client-folder/"+reportName);
-			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-			obj.put("upload", "success");
-
-			ReportTable reportTable = new ReportTable(1,reportName,description,"./client-folder/"+reportName,new Date().toString(),"20",apiName);
-			reportTableService.addReportTable(reportTable);
 		} catch (IOException e) {
 			obj.put("err", e.getMessage());
 			e.printStackTrace();
@@ -643,10 +661,10 @@ public class InvoiceController {
 		attributes.addFlashAttribute("message", "You successfully uploaded " + reportName + '!');
 		arr.add(obj);
 		map.put("row",arr);
-		return map;
+		return new ModelAndView("redirect:/");
 	}
 
-	@PostMapping("/update3")
+	@PostMapping("/saveReport")
 	public ReportTable addRecord(@RequestBody ReportTable reportTable){
 		return reportTableService.addReportTable(reportTable);
 	}
@@ -654,6 +672,11 @@ public class InvoiceController {
 	@GetMapping("/findAllReports")
 	public List<ReportTable> findAllReports(){
 		return reportTableService.fetchAllReportTable();
+	}
+
+	@GetMapping("/deleteByIdReport")
+	public void deleteByIdReport(@RequestParam String id){
+		reportTableService.deleteByIdReport(Integer.parseInt(id));
 	}
 
 }

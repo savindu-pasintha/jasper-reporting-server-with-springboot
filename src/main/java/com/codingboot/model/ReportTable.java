@@ -33,6 +33,10 @@ public class ReportTable {
     @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "apiendpoint")
-    private String apiendpoint;
+    @Column(name = "api_end_point")
+    private String apiEndPoint;
+
+    @Column(name = "client_folder_name")
+    private String clientFolderName;
+
 }

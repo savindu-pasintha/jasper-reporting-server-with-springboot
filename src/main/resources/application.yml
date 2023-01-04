@@ -15,3 +15,5 @@ spring:
 #        temp :
 #          use_jdbc_metadata_defaults : false
 #    show-sql: true
+
+report_folder_path : C:\client-jasper-report-folders

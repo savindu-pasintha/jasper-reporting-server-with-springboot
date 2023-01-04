@@ -22,15 +22,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        //html
-        async function reportFetch() {
+        //html report
+        async function reportFetch(reportLocationPath) {
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-            const raw2 = "{\r\n [\r\n        {\r\n            \"name\": \"J125\",\r\n            \"description\": \"J125 - Jacquard machine\",\r\n            \"parent\": 0,\r\n            \"id\": 1,\r\n            \"enable\": true,\r\n            \"token\": \"J125WFT\"\r\n        },\r\n        {\r\n            \"name\": \"J125 Data logger\",\r\n            \"description\": \"Data logger for Jacquard machine\",\r\n            \"parent\": 1,\r\n            \"id\": 2,\r\n            \"enable\": true,\r\n            \"token\": \"J125DL\"\r\n        }\r\n ]\r\n\r\n}";
+            //const raw2 = "{\r\n [\r\n        {\r\n            \"name\": \"J125\",\r\n            \"description\": \"J125 - Jacquard machine\",\r\n            \"parent\": 0,\r\n            \"id\": 1,\r\n            \"enable\": true,\r\n            \"token\": \"J125WFT\"\r\n        },\r\n        {\r\n            \"name\": \"J125 Data logger\",\r\n            \"description\": \"Data logger for Jacquard machine\",\r\n            \"parent\": 1,\r\n            \"id\": 2,\r\n            \"enable\": true,\r\n            \"token\": \"J125DL\"\r\n        }\r\n ]\r\n\r\n}";
+            var formData = new FormData();
+            formData.append("reportLocation",reportLocationPath)
             const requestOptions = {
-                method: 'GET',
+                //method: 'GET',
+                method: 'post',
                 headers: myHeaders,
-                //body: raw2,
+                body: JSON.stringify({
+                    "name":"report1",
+                    "description":"description",
+                    "path":"C:\\client-jasper-report-folders/c2/0.05555429761060837reportc1.jrxml",
+                    "timestamp":"2022-12-30-23-11-15",
+                    "userId":"12",
+                    "apiEndPoint": null,
+                    "clientFolderName":"c1"
+                }),
                 redirect: 'follow'
             };
             await fetch("http://localhost:8082/pdf8", requestOptions)
@@ -40,14 +51,39 @@
                         console.log(result)
                         document.getElementById("content_home").innerHTML = result;
                         $("#content_home").show();
+                    }else{
+                        document.getElementById("content_home").innerHTML = "<div class='text-center'> No report data</div>";
+                        $("#content_home").show();
                     }
                 })
                 .catch(error => console.log('error', error));
         };
 
+        async function reportDelete(deleteId) {
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+             const requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                //body: raw2,
+                redirect: 'follow'
+            };
+            await fetch("http://localhost:8082/deleteByIdReport?id="+deleteId, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    if (result != null && result != undefined) {
+                        console.log("report deleted", {id:deleteId})
+                        document.getElementById("content_home").innerHTML = result;
+                        $("#content_home").show();
+                    }
+                })
+                .catch(error => console.log('error', error));
+        };
         $("#home_btn").click(()=>{
             $("#content_home").show();
         });
+
+
 
         $("#report_btn").click(()=>{
             $("#content_home").hide();
@@ -66,22 +102,42 @@
                         report_card = report_card + `<div class="col-sm-12 col-md-3">
                     <div class="card mt-5">
                         <div class="card-body">
-                            <h5 class="card-title">Report ${result[i]?.id} ${result[i]?.name}</h5>
-                            <p class="card-text">description : ${result[i]?.description}</p>
-                            <p class="card-text">report path : ${result[i]?.path}</p>
-                             <p class="card-text">endpoint : ${result[i]?.endpoint}</p>
-                            <p class="card-text">createdAt : ${result[i]?.timestamp}</p>
-                            <a href="#" class="btn btn-primary" id="openBtnId" >Open</a>
+                            <h5 class="card-title">${result[i]?.name}</h5>
+                            <p class="card-text">${result[i]?.description}</p>
+                            <p class="card-text"> ${result[i]?.path}</p>
+                             <p class="card-text">${result[i]?.apiEndPoint}</p>
+                            <p class="card-text"> ${result[i]?.timestamp}</p>
+                            <button  class="btn btn-danger" id="deleteBtnId"  val="${result[i]?.id}">X</button>
+                            <button  class="btn btn-primary" id="openBtnId" val="${result[i]?.path}">Open</button>
                         </div>
                     </div>
                 </div>`;
                     }
                     document.getElementById("content_home").innerHTML = `<div class="row" id="report_card">${report_card}</div>`;
                     $("#content_home").show();
-
                 })
                 .catch(error => console.log('error', error));
         });
+
+        $(document).on("click", "#deleteBtnId", function(e) {
+            var val = e.target.attributes.val
+            if(val){
+                reportDelete(val)
+                console.log("deleted : ",val)
+            }else{
+                console.log("err in delete: ", val)
+            }
+        });
+
+        $(document).on("click", "#openBtnId", function(e) {
+            if(e.target.attributes.val){
+                reportFetch(e.target.attributes.val);
+            }else{
+                console.log("err in open report: ", e.target.attributes?.path)
+            }
+        });
+
+
 
         $("#upload_btn").click(()=>{
             $("#content_home").hide();
@@ -92,6 +148,11 @@
                     <h2>Upload  Your Report</h2>
                     <p class="alert alert-primary"></p>
                     <form id="upload_form" method="post" action="/upload2" enctype="multipart/form-data">
+                     <div class="form-group">
+                            <h4 class="text-primary">client id</h4>
+                            <input placeholder="c1" required
+                                   type="text" name="clientFolderId" class="form-control form-control-sm" value="c2">
+                        </div>
                         <div class="form-group">
                             <h4 class="text-primary">select dataset</h4>
                             <select required id="apiName" name="apiName"
@@ -102,20 +163,20 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <h4 class="text-primary">report name enter</h4>
+                            <h4 class="text-primary">file name</h4>
                             <input placeholder="report1.jrxml" required
                                    type="text" name="reportName" class="form-control form-control-sm">
                         </div>
                         <div class="form-group">
-                            <h4 class="text-primary">report description</h4>
+                            <h4 class="text-primary">description</h4>
                             <input placeholder="write description" required
-                                   type="text" name="reportName" class="form-control form-control-sm">
+                                   type="text" name="description" class="form-control form-control-sm">
                         </div>
                         <div class="form-group">
-                            <input required accept=".jrxml,.png,.jpg,.pdf"
+                            <input required accept=".jrxml"
                                    type="file" name="file" class="form-control-file">
                         </div>
-                        <!--type="submit" -->
+                        <!--type="submit" ,.png,.jpg,.pdf-->
                         <button id="submit_btn"  type="btn" class="btn btn-primary">Upload File</button>
                     </form>
                 </div>
