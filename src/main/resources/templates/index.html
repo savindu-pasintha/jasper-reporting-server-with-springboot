@@ -12,9 +12,12 @@
             <div class="row pt-5"> <button id="home_btn" class="btn btn-primary form-control m-2">Home</button></div>
             <div class="row pt-5"> <button id="report_btn" class="btn btn-primary form-control m-2">Reports</button></div>
             <div class="row pt-5"> <button id="upload_btn" class="btn btn-primary form-control m-2">Upload Report</button></div>
-            <div class="row pt-5"> <button id="view_btn" class="btn btn-primary form-control m-2">View</button></div>
+       <!-- <div class="row pt-5"> <button id="view_btn" class="btn btn-primary form-control m-2">View</button></div>-->
         </div>
-        <div class="col-10 bg-light" id="content_home" style="height: 100vh">Home</div>
+        <div class="col-10 bg-light" id="content_home" style="width:1100px;height:100vh;overflow-y: scroll;overflow-style:auto;scrollbar-width: none;-ms-overflow-style: none;">
+            <h1 class="text-center text-primary">Report Manager</h1>
+            <h1 class="text-left text-primary"> </h1>
+        </div>
     </div>
 </div>
 
@@ -23,12 +26,13 @@
 <script type="text/javascript">
     $(document).ready(function(){
         //html report
-        async function reportFetch(reportLocationPath) {
+        async function reportFetch(name,folderName,fileName) {
+            console.log(folderName,fileName)
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
             //const raw2 = "{\r\n [\r\n        {\r\n            \"name\": \"J125\",\r\n            \"description\": \"J125 - Jacquard machine\",\r\n            \"parent\": 0,\r\n            \"id\": 1,\r\n            \"enable\": true,\r\n            \"token\": \"J125WFT\"\r\n        },\r\n        {\r\n            \"name\": \"J125 Data logger\",\r\n            \"description\": \"Data logger for Jacquard machine\",\r\n            \"parent\": 1,\r\n            \"id\": 2,\r\n            \"enable\": true,\r\n            \"token\": \"J125DL\"\r\n        }\r\n ]\r\n\r\n}";
             var formData = new FormData();
-            formData.append("reportLocation",reportLocationPath)
+            formData.append("reportLocation",fileName)
             const requestOptions = {
                 //method: 'GET',
                 method: 'post',
@@ -36,7 +40,7 @@
                 body: JSON.stringify({
                     "name":"report1",
                     "description":"description",
-                    "path":"C:\\client-jasper-report-folders/c2/0.05555429761060837reportc1.jrxml",
+                    "path":"C:\client-jasper-report-folders/999/0.4024120504297216abc.jrxml",
                     "timestamp":"2022-12-30-23-11-15",
                     "userId":"12",
                     "apiEndPoint": null,
@@ -44,12 +48,22 @@
                 }),
                 redirect: 'follow'
             };
+            // await fetch("http://localhost:8082/pdf3", requestOptions)
             await fetch("http://localhost:8082/pdf8", requestOptions)
                 .then(response => response.text())
                 .then(result => {
                     if (result != null && result != undefined) {
+                       // reportLocationPath="src/main/resources/Milora_A4SimpleKeys.jrxml";
                         console.log(result)
-                        document.getElementById("content_home").innerHTML = result;
+                         document.getElementById("content_home").innerHTML = `<iframe
+                          src="http://localhost:8082/pdf9?name=${name}&apiEndPoint=apiendpoint&clientFolderName=${folderName}&path=${fileName}"
+                         width="1100px" height="650px">
+                         class="iframe_class"
+                          </iframe>`;
+
+                                          //srcdoc=${result}used for the load html,content
+                                          //   style="width:1100px;height:650px;"
+                         // document.getElementById("content_home").innerHTML = result;
                         $("#content_home").show();
                     }else{
                         document.getElementById("content_home").innerHTML = "<div class='text-center'> No report data</div>";
@@ -59,7 +73,7 @@
                 .catch(error => console.log('error', error));
         };
 
-        async function reportDelete(deleteId) {
+        async function reportDelete(folder,deleteId) {
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
              const requestOptions = {
@@ -100,16 +114,18 @@
                     console.log(result)
                     for(let i=0; i<result.length; i++){
                         report_card = report_card + `<div class="col-sm-12 col-md-3">
-                    <div class="card mt-5">
-                        <div class="card-body">
-                            <h5 class="card-title">${result[i]?.name}</h5>
-                            <p class="card-text">${result[i]?.description}</p>
-                            <p class="card-text"> ${result[i]?.path}</p>
-                             <p class="card-text">${result[i]?.apiEndPoint}</p>
-                            <p class="card-text"> ${result[i]?.timestamp}</p>
-                            <button  class="btn btn-danger" id="deleteBtnId"  val="${result[i]?.id}">X</button>
-                            <button  class="btn btn-primary" id="openBtnId" val="${result[i]?.path}">Open</button>
-                        </div>
+                    <div class="card mt-5" style="height:400px">
+                        <div class="card-body" style="justify-content: space-between;flex-direction: column;display: flex;">
+                            <h5 class="card-title">${result[i]?.name.toUpperCase()}</h5>
+                            <p class="card-text"> ${result[i]?.path.toLowerCase()}</p>
+                            <p class="card-text"> ${result[i]?.timestamp.toLowerCase()}</p>
+                            <p class="card-text justify-align font-weight-bold">${result[i]?.description.toLowerCase()}</p>
+
+ <div style=="justify-content: flex-end;display: flex;">
+                          <button  class="btn btn-danger" id="deleteBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.id}">X</button>
+                            <button  class="btn btn-primary" id="openBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.path}">Open</button>
+ </div>
+                                 </div>
                     </div>
                 </div>`;
                     }
@@ -120,9 +136,9 @@
         });
 
         $(document).on("click", "#deleteBtnId", function(e) {
-            var val = e.target.attributes.val
+            var val = e.target.attributes.val.value
             if(val){
-                reportDelete(val)
+                reportDelete(e.target.attributes.folder.value,val)
                 console.log("deleted : ",val)
             }else{
                 console.log("err in delete: ", val)
@@ -130,10 +146,14 @@
         });
 
         $(document).on("click", "#openBtnId", function(e) {
-            if(e.target.attributes.val){
-                reportFetch(e.target.attributes.val);
+
+            let folderName = e.target.attributes.folder.value.toString();
+            let fileName =  e.target.attributes.val.value.toString();
+            console.log(folderName,fileName)
+            if(folderName && fileName){
+                reportFetch(name,folderName,fileName);
             }else{
-                console.log("err in open report: ", e.target.attributes?.path)
+                console.error("err in open report: ", e.target.attributes?.path)
             }
         });
 
@@ -191,10 +211,7 @@
             reportFetch();
         });
 
-        $("#openBtnId").click(()=>{
-            $("#content_home").hide();
-            reportFetch();
-        });
+
 
         $("#submit_btn").click(()=>{
             // (A) GET FORM DATA

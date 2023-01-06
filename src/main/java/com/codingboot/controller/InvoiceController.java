@@ -184,7 +184,11 @@ public class InvoiceController {
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
 	}
 	@GetMapping(value = "/pdf4", produces = MediaType.APPLICATION_PDF_VALUE)
-	public ResponseEntity<byte[]> downloadInvoice4() throws JRException, IOException {
+	public ResponseEntity<byte[]> downloadInvoice4(@RequestParam("name") String name,
+												   @RequestParam("path") String pdfPath,
+												   @RequestParam("clientFolderName") String clientFolderName,
+												   @RequestParam("apiEndPoint") String apiEndPoint) throws JRException, IOException {
+		System.out.println(name+"\n"+pdfPath);
 		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(Arrays.asList(
 				new Milora("s","20:10","stoped",".03ms","description","comment"),
 				new Milora("s","20:10","stoped",".03ms","description","comment"),
@@ -196,13 +200,54 @@ public class InvoiceController {
 				new Milora("s","20:10","stoped",".03ms","description","comment"),
 				new Milora("s","20:10","stoped",".03ms","description","comment"),
 				new Milora("s","20:10","stoped",".03ms","description","comment")
-		), false);
+		,new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment")
+		,new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment")
+		,new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment"),
+				new Milora("s","20:10","stoped",".03ms","description","comment")
+	), false);
 
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("total", "9999");
 
-		JasperReport compileReport = JasperCompileManager
-				.compileReport(new FileInputStream("src/main/resources/Milora_A4SimpleKeys.jrxml"));
+
+
+//
+//		JasperReport compileReport = JasperCompileManager
+//				.compileReport(new FileInputStream("src/main/resources/Milora_A4SimpleKeys.jrxml"));
+
+		JasperReport compileReport=null;
+		File theDir = new File(pdfPath);
+		File clientDir = new File(clientFolderName);
+		//if (theDir.exists() && clientDir.exists()){
+			compileReport = JasperCompileManager
+					.compileReport(new FileInputStream(pdfPath));
+		//}
 
 		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
@@ -461,7 +506,7 @@ public class InvoiceController {
 
 	}
 
-	//export as xml types
+	//export as xml report types
 	@GetMapping(value = "/pdf7",
 			consumes="application/json")
 	public ResponseEntity<String> downloadInvoice7() throws JRException, IOException {
@@ -511,8 +556,35 @@ public class InvoiceController {
 				new Products(122, "Mouse", 54884),
 				new Products(123, "Laptop", 54884),
 				new Products(124, "Mobile", 54884),
-				new Products(125, "Headphone", 54884)
-		), false);
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(125, "last", 54884)), false);
 
 		//System.out.println("reportLocation : "+reportTable.getPath());
 		Map<String, Object> parameters = new HashMap<>();
@@ -568,6 +640,76 @@ public class InvoiceController {
 
 		return ResponseEntity.ok().headers(headers).body(data);
 	}
+
+	//working with iframe
+	@GetMapping(value = "/pdf9", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<byte[]> downloadInvoice9(@RequestParam("name") String name,
+												   @RequestParam("path") String pdfSavedFileName,
+												   @RequestParam("clientFolderName") String clientFolderName,
+												   @RequestParam("apiEndPoint") String apiEndPoint) throws JRException, IOException {
+		System.out.println(name+"\n"+pdfSavedFileName+"\n"+clientFolderName);
+
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(Arrays.asList(
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(121, "gihan", 54884),
+				new Products(122, "Mouse", 54884),
+				new Products(123, "Laptop", 54884),
+				new Products(124, "Mobile", 54884),
+				new Products(125, "last", 54884)), false);
+
+
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("total", "9999");
+
+		JasperReport compileReport=null;
+		File theDir = new File(pdfSavedFileName);
+		File clientDir = new File(clientFolderName);
+		//if (theDir.exists() && clientDir.exists()){
+		compileReport = JasperCompileManager
+				.compileReport(new FileInputStream(env.getProperty("report_folder_path")+"/"+clientFolderName+"/"+pdfSavedFileName));
+		//}
+
+		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
+
+		// JasperExportManager.exportReportToPdfFile(jasperPrint,
+		// System.currentTimeMillis() + ".pdf");
+		byte data[] = JasperExportManager.exportReportToPdf(jasperPrint);
+
+		//System.err.println(data);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=citiesreport.pdf");
+
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
+	}
+
 
 	@PostMapping("/upload")
 	public  ModelAndView  uploadFile(@RequestParam("file") MultipartFile file,
