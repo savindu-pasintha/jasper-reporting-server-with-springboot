@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Spring Boot & Thymeleaf File Upload</title>
+    <title>Report Manager</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script type="text/javascript" th:src="@{/js/index.js}"></script>
 </head>
@@ -31,8 +31,8 @@
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
             //const raw2 = "{\r\n [\r\n        {\r\n            \"name\": \"J125\",\r\n            \"description\": \"J125 - Jacquard machine\",\r\n            \"parent\": 0,\r\n            \"id\": 1,\r\n            \"enable\": true,\r\n            \"token\": \"J125WFT\"\r\n        },\r\n        {\r\n            \"name\": \"J125 Data logger\",\r\n            \"description\": \"Data logger for Jacquard machine\",\r\n            \"parent\": 1,\r\n            \"id\": 2,\r\n            \"enable\": true,\r\n            \"token\": \"J125DL\"\r\n        }\r\n ]\r\n\r\n}";
-            var formData = new FormData();
-            formData.append("reportLocation",fileName)
+            // var formData = new FormData();
+            // formData.append("reportLocation",fileName)
             const requestOptions = {
                 //method: 'GET',
                 method: 'post',
@@ -49,14 +49,14 @@
                 redirect: 'follow'
             };
             // await fetch("http://localhost:8082/pdf3", requestOptions)
-            await fetch("http://localhost:8082/pdf8", requestOptions)
-                .then(response => response.text())
-                .then(result => {
-                    if (result != null && result != undefined) {
-                       // reportLocationPath="src/main/resources/Milora_A4SimpleKeys.jrxml";
-                        console.log(result)
+            // await fetch("http://localhost:8082/pdf8", requestOptions)
+            //     .then(response => response.text())
+            //     .then(result => {
+            //         if (result != null && result != undefined) {
+            //            // reportLocationPath="src/main/resources/Milora_A4SimpleKeys.jrxml";
+            //             console.log(result)
                          document.getElementById("content_home").innerHTML = `<iframe
-                          src="http://localhost:8082/pdf9?name=${name}&apiEndPoint=apiendpoint&clientFolderName=${folderName}&path=${fileName}"
+                          src="http://localhost:8082/pdf10?name=${name}&apiEndPoint=apiendpoint&clientFolderName=${folderName}&path=${fileName}"
                          width="1100px" height="650px">
                          class="iframe_class"
                           </iframe>`;
@@ -65,12 +65,12 @@
                                           //   style="width:1100px;height:650px;"
                          // document.getElementById("content_home").innerHTML = result;
                         $("#content_home").show();
-                    }else{
-                        document.getElementById("content_home").innerHTML = "<div class='text-center'> No report data</div>";
-                        $("#content_home").show();
-                    }
-                })
-                .catch(error => console.log('error', error));
+                //     }else{
+                //         document.getElementById("content_home").innerHTML = "<div class='text-center'> No report data</div>";
+                //         $("#content_home").show();
+                //     }
+                // })
+                // .catch(error => console.log('error', error));
         };
 
         async function reportDelete(folder,deleteId) {
@@ -97,17 +97,13 @@
             $("#content_home").show();
         });
 
-
-
         $("#report_btn").click(()=>{
             $("#content_home").hide();
             let report_card = ``;
-
             var requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
             };
-
             fetch("http://localhost:8082/findAllReports", requestOptions)
                 .then(response => response.json())
                 .then(result => {
@@ -118,6 +114,7 @@
                         <div class="card-body" style="justify-content: space-between;flex-direction: column;display: flex;">
                             <h5 class="card-title">${result[i]?.name.toUpperCase()}</h5>
                             <p class="card-text"> ${result[i]?.path.toLowerCase()}</p>
+                            <p class="card-text"> ${result[i]?.apiEndPoint.toLowerCase()}</p>
                             <p class="card-text"> ${result[i]?.timestamp.toLowerCase()}</p>
                             <p class="card-text justify-align font-weight-bold">${result[i]?.description.toLowerCase()}</p>
 
@@ -151,7 +148,7 @@
             let fileName =  e.target.attributes.val.value.toString();
             console.log(folderName,fileName)
             if(folderName && fileName){
-                reportFetch(name,folderName,fileName);
+                reportFetch("no",folderName,fileName);
             }else{
                 console.error("err in open report: ", e.target.attributes?.path)
             }

@@ -8,10 +8,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
+import com.codingboot.entity.DeviceListData;
 import com.codingboot.model.ReportTable;
 import com.codingboot.service.ReportTableService;
 import com.codingboot.entity.Device;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.view.JasperViewer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +33,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -649,40 +652,13 @@ public class InvoiceController {
 												   @RequestParam("apiEndPoint") String apiEndPoint) throws JRException, IOException {
 		System.out.println(name+"\n"+pdfSavedFileName+"\n"+clientFolderName);
 
-		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(Arrays.asList(
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(
+				Arrays.asList(
 				new Products(121, "gihan", 54884),
 				new Products(122, "Mouse", 54884),
 				new Products(123, "Laptop", 54884),
-				new Products(124, "Mobile", 54884),
-				new Products(121, "gihan", 54884),
-				new Products(122, "Mouse", 54884),
-				new Products(123, "Laptop", 54884),
-				new Products(124, "Mobile", 54884),
-				new Products(121, "gihan", 54884),
-				new Products(122, "Mouse", 54884),
-				new Products(123, "Laptop", 54884),
-				new Products(124, "Mobile", 54884),
-				new Products(121, "gihan", 54884),
-				new Products(122, "Mouse", 54884),
-				new Products(123, "Laptop", 54884),
-				new Products(124, "Mobile", 54884),
-				new Products(121, "gihan", 54884),
-				new Products(122, "Mouse", 54884),
-				new Products(123, "Laptop", 54884),
-				new Products(124, "Mobile", 54884),
-				new Products(121, "gihan", 54884),
-				new Products(122, "Mouse", 54884),
-				new Products(123, "Laptop", 54884),
-				new Products(124, "Mobile", 54884),
-				new Products(121, "gihan", 54884),
-				new Products(122, "Mouse", 54884),
-				new Products(123, "Laptop", 54884),
-				new Products(124, "Mobile", 54884),
-				new Products(121, "gihan", 54884),
-				new Products(122, "Mouse", 54884),
-				new Products(123, "Laptop", 54884),
-				new Products(124, "Mobile", 54884),
-				new Products(125, "last", 54884)), false);
+				new Products(124, "Mobile", 54884)
+				), false);
 
 
 		Map<String, Object> parameters = new HashMap<>();
@@ -697,7 +673,7 @@ public class InvoiceController {
 		//}
 
 		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
-
+		JasperViewer.viewReport(jasperPrint);
 		// JasperExportManager.exportReportToPdfFile(jasperPrint,
 		// System.currentTimeMillis() + ".pdf");
 		byte data[] = JasperExportManager.exportReportToPdf(jasperPrint);
@@ -709,7 +685,43 @@ public class InvoiceController {
 
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
 	}
+	//working with iframe
+	@GetMapping(value = "/pdf10", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<byte[]> downloadInvoice10(@RequestParam("name") String name,
+												   @RequestParam("path") String pdfSavedFileName,
+												   @RequestParam("clientFolderName") String clientFolderName,
+												   @RequestParam("apiEndPoint") String apiEndPoint) throws JRException, IOException {
+		System.out.println(name+"\n"+pdfSavedFileName+"\n"+clientFolderName);
 
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<DeviceListData> response
+				= restTemplate.getForEntity(env.getProperty("report_data_url"),DeviceListData.class);
+		DeviceListData deviceListData = response.getBody();
+		List<Device> listOfDevice = deviceListData.getData();
+//		System.out.println(listOfDevice.size());
+
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfDevice,true);
+
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("total", "9999");
+		System.out.println(env.getProperty("report_folder_path")+"/"+clientFolderName+"/"+pdfSavedFileName);
+
+		JasperReport compileReport=null;
+		compileReport = JasperCompileManager
+				.compileReport(new FileInputStream(env.getProperty("report_folder_path")+"/"+clientFolderName+"/"+pdfSavedFileName));
+
+		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
+		//JasperViewer.viewReport(jasperPrint);
+		// JasperExportManager.exportReportToPdfFile(jasperPrint,
+		// System.currentTimeMillis() + ".pdf");
+		byte data[] = JasperExportManager.exportReportToPdf(jasperPrint);
+
+		//System.err.println(data);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=citiesreport.pdf");
+
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
+	}
 
 	@PostMapping("/upload")
 	public  ModelAndView  uploadFile(@RequestParam("file") MultipartFile file,
@@ -785,13 +797,14 @@ public class InvoiceController {
 
 				//Path path = Paths.get("D:\\spring-data-jpa-example-master\\src\\main\\resources\\" + reportName);
 				if(!clientFolderId.isEmpty() && !reportName.isEmpty()) {
-					String fileSavedPath = report_folder_path +"/"+ clientFolderId+"/" +Math.random()+reportName;
+					String newFileName = Math.random()+reportName;
+					String fileSavedPath = report_folder_path +"/"+ clientFolderId+"/" +newFileName;
 					Path path = Paths.get(fileSavedPath);
 					Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
 					obj.put("file_upload",fileSavedPath);
 
-					ReportTable reportTable = new ReportTable(1, reportName, description, fileSavedPath, new Date().toString(), "20", apiName,clientFolderId);
+					ReportTable reportTable = new ReportTable(1, reportName, description, newFileName, new Date().toString(), "20", apiName,clientFolderId);
 					reportTableService.addReportTable(reportTable);
 				}
 			}
@@ -821,4 +834,24 @@ public class InvoiceController {
 		reportTableService.deleteByIdReport(Integer.parseInt(id));
 	}
 
+
+	@GetMapping("/restClientTemplate")
+	public ResponseEntity<Object>  restClientTemplate() {
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<Object> response
+				= restTemplate.getForEntity("http://178.128.106.88:8118/xdoto/admin/device/",Object.class);
+		Object resOBJ = response.getBody();
+		System.out.println(resOBJ);
+		return response;
+	}
+	@GetMapping("/restClientTemplate2")
+	public ResponseEntity<DeviceListData>  restClientTemplate2() {
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<DeviceListData> response
+				= restTemplate.getForEntity("http://178.128.106.88:8118/xdoto/admin/device/",DeviceListData.class);
+		DeviceListData deviceListData = response.getBody();
+		List<Device> ls = deviceListData.getData();
+		System.out.println(ls.size());
+		return response;
+	}
 }
