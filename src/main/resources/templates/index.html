@@ -12,7 +12,7 @@
             <div class="row pt-5"> <button id="home_btn" class="btn btn-primary form-control m-2">Home</button></div>
             <div class="row pt-5"> <button id="report_btn" class="btn btn-primary form-control m-2">Reports</button></div>
             <div class="row pt-5"> <button id="upload_btn" class="btn btn-primary form-control m-2">Upload Report</button></div>
-       <!-- <div class="row pt-5"> <button id="view_btn" class="btn btn-primary form-control m-2">View</button></div>-->
+            <!-- <div class="row pt-5"> <button id="view_btn" class="btn btn-primary form-control m-2">View</button></div>-->
         </div>
         <div class="col-10 bg-light" id="content_home" style="width:1100px;height:100vh;overflow-y: scroll;overflow-style:auto;scrollbar-width: none;-ms-overflow-style: none;">
             <h1 class="text-center text-primary">Report Manager</h1>
@@ -20,14 +20,48 @@
         </div>
     </div>
 </div>
-
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        //html report
-        async function reportFetch(name,folderName,fileName) {
+        let document_type = "";
+        const downloadFile = async (type,name,folderName,fileName) => {
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow',
+                origin: 'http://localhost:8082',
+                optionSuccessStatus: 200,
+                //credentials: true, //access-control-allow-credentials:true
+            }
+
+           await fetch(`http://localhost:8082/report/${type.toUpperCase()}?name=${name}&apiEndPoint=apiendpoint&clientFolderName=${folderName}&path=${fileName}`,
+                requestOptions,
+            )
+                .then((response) => response.blob())
+                .then((res) => {
+                    const blob = res
+                    const newBlob = new Blob([blob], { type: 'application/octet-stream' })
+                    const blobUrl = window.URL.createObjectURL(newBlob)
+                    const link = document.createElement('a')
+                    link.href = blobUrl
+                    link.setAttribute('download', `${'report'}.${type.toLowerCase()}`)
+                    document.body.appendChild(link)
+                    link.click()
+                    link.parentNode.removeChild(link)
+                    window.URL.revokeObjectURL(blobUrl)
+                })
+                .catch((error) => console.log('error', error))
+        }
+        async function reportFetch(type,name,folderName,fileName) {
             console.log(folderName,fileName)
+             document.getElementById("content_home").innerHTML = `<iframe
+                            src="http://localhost:8082/pdf10?name=${name}&apiEndPoint=apiendpoint&clientFolderName=${folderName}&path=${fileName}"
+                           width="1100px" height="650px">
+                           class="iframe_class"
+                            </iframe>`;
+            $("#content_home").show();
+            console.log(type)
+            await downloadFile(type,name,folderName,fileName);
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
             //const raw2 = "{\r\n [\r\n        {\r\n            \"name\": \"J125\",\r\n            \"description\": \"J125 - Jacquard machine\",\r\n            \"parent\": 0,\r\n            \"id\": 1,\r\n            \"enable\": true,\r\n            \"token\": \"J125WFT\"\r\n        },\r\n        {\r\n            \"name\": \"J125 Data logger\",\r\n            \"description\": \"Data logger for Jacquard machine\",\r\n            \"parent\": 1,\r\n            \"id\": 2,\r\n            \"enable\": true,\r\n            \"token\": \"J125DL\"\r\n        }\r\n ]\r\n\r\n}";
@@ -55,28 +89,22 @@
             //         if (result != null && result != undefined) {
             //            // reportLocationPath="src/main/resources/Milora_A4SimpleKeys.jrxml";
             //             console.log(result)
-                         document.getElementById("content_home").innerHTML = `<iframe
-                          src="http://localhost:8082/pdf10?name=${name}&apiEndPoint=apiendpoint&clientFolderName=${folderName}&path=${fileName}"
-                         width="1100px" height="650px">
-                         class="iframe_class"
-                          </iframe>`;
+            //srcdoc=${result}used for the load html,content
+            //   style="width:1100px;height:650px;"
+            // document.getElementById("content_home").innerHTML = result;
+            //
+            //     }else{
+            //         document.getElementById("content_home").innerHTML = "<div class='text-center'> No report data</div>";
+            //         $("#content_home").show();
+            //     }
+            // })
+            // .catch(error => console.log('error', error));
 
-                                          //srcdoc=${result}used for the load html,content
-                                          //   style="width:1100px;height:650px;"
-                         // document.getElementById("content_home").innerHTML = result;
-                        $("#content_home").show();
-                //     }else{
-                //         document.getElementById("content_home").innerHTML = "<div class='text-center'> No report data</div>";
-                //         $("#content_home").show();
-                //     }
-                // })
-                // .catch(error => console.log('error', error));
         };
-
         async function reportDelete(folder,deleteId) {
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
-             const requestOptions = {
+            const requestOptions = {
                 method: 'GET',
                 headers: myHeaders,
                 //body: raw2,
@@ -96,7 +124,6 @@
         $("#home_btn").click(()=>{
             $("#content_home").show();
         });
-
         $("#report_btn").click(()=>{
             $("#content_home").hide();
             let report_card = ``;
@@ -110,28 +137,36 @@
                     console.log(result)
                     for(let i=0; i<result.length; i++){
                         report_card = report_card + `<div class="col-sm-12 col-md-3">
-                    <div class="card mt-5" style="height:400px">
-                        <div class="card-body" style="justify-content: space-between;flex-direction: column;display: flex;">
-                            <h5 class="card-title">${result[i]?.name.toUpperCase()}</h5>
-                            <p class="card-text"> ${result[i]?.path.toLowerCase()}</p>
-                            <p class="card-text"> ${result[i]?.apiEndPoint.toLowerCase()}</p>
-                            <p class="card-text"> ${result[i]?.timestamp.toLowerCase()}</p>
-                            <p class="card-text justify-align font-weight-bold">${result[i]?.description.toLowerCase()}</p>
+                      <div class="card mt-5" style="height:400px">
+                          <div class="card-body" style="justify-content: space-between;flex-direction: column;display: flex;">
+                              <h5 class="card-title">${result[i]?.name.toUpperCase()}</h5>
+                              <p class="card-text"> ${result[i]?.path.toLowerCase()}</p>
+                              <p class="card-text"> ${result[i]?.apiEndPoint.toLowerCase()}</p>
+                              <p class="card-text"> ${result[i]?.timestamp.toLowerCase()}</p>
+                              <p class="card-text justify-align font-weight-bold">${result[i]?.description.toLowerCase()}</p>
 
- <div style=="justify-content: flex-end;display: flex;">
-                          <button  class="btn btn-danger" id="deleteBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.id}">X</button>
-                            <button  class="btn btn-primary" id="openBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.path}">Open</button>
- </div>
-                                 </div>
-                    </div>
-                </div>`;
+      <div style=="justify-content: flex-end;display: flex;">
+                            <button  class="btn btn-danger" id="deleteBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.id}">X</button>
+                              <select required id="selectDocumentType" name="selectDocumentType"
+                                      class="form-control-sm" style="height:38px;">
+                                  <option >File⬇</option>
+                                   <option value="PDF">PDF</option>
+          <option value="DOC">DOC</option>
+          <option value="HTML">HTML</option>
+<!--          <option value="CSV">CSV</option>-->
+          <option value="XLSX">XLSX</option>
+                              </select>
+                              <button  class="btn btn-primary" id="openBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.path}">Open</button>
+      </div>
+                                   </div>
+                      </div>
+                  </div>`;
                     }
                     document.getElementById("content_home").innerHTML = `<div class="row" id="report_card">${report_card}</div>`;
                     $("#content_home").show();
                 })
                 .catch(error => console.log('error', error));
         });
-
         $(document).on("click", "#deleteBtnId", function(e) {
             var val = e.target.attributes.val.value
             if(val){
@@ -141,75 +176,69 @@
                 console.log("err in delete: ", val)
             }
         });
-
+        $(document).on("change","#selectDocumentType",function(e){
+            document_type = e.target.value;
+        });
         $(document).on("click", "#openBtnId", function(e) {
-
             let folderName = e.target.attributes.folder.value.toString();
             let fileName =  e.target.attributes.val.value.toString();
             console.log(folderName,fileName)
             if(folderName && fileName){
-                reportFetch("no",folderName,fileName);
+                reportFetch(document_type,"no",folderName,fileName);
             }else{
                 console.error("err in open report: ", e.target.attributes?.path)
             }
         });
-
-
-
         $("#upload_btn").click(()=>{
             $("#content_home").hide();
             document.getElementById("content_home").innerHTML = ` <section class="my-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8 mx-auto">
-                    <h2>Upload  Your Report</h2>
-                    <p class="alert alert-primary"></p>
-                    <form id="upload_form" method="post" action="/upload2" enctype="multipart/form-data">
-                     <div class="form-group">
-                            <h4 class="text-primary">client id</h4>
-                            <input placeholder="c1" required
-                                   type="text" name="clientFolderId" class="form-control form-control-sm" value="c2">
-                        </div>
-                        <div class="form-group">
-                            <h4 class="text-primary">select dataset</h4>
-                            <select required id="apiName" name="apiName"
-                                    class="form-control form-control-sm">
-                                <option value="1">https://www.@.@/dataset 1</option>
-                                <option value="2">https://www.@.@/dataset 2</option>
-                                <option value="3">https://www.@.@/dataset 3</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <h4 class="text-primary">file name</h4>
-                            <input placeholder="report1.jrxml" required
-                                   type="text" name="reportName" class="form-control form-control-sm">
-                        </div>
-                        <div class="form-group">
-                            <h4 class="text-primary">description</h4>
-                            <input placeholder="write description" required
-                                   type="text" name="description" class="form-control form-control-sm">
-                        </div>
-                        <div class="form-group">
-                            <input required accept=".jrxml"
-                                   type="file" name="file" class="form-control-file">
-                        </div>
-                        <!--type="submit" ,.png,.jpg,.pdf-->
-                        <button id="submit_btn"  type="btn" class="btn btn-primary">Upload File</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>`;
+          <div class="container">
+              <div class="row">
+                  <div class="col-md-8 mx-auto">
+                      <h2>Upload  Your Report</h2>
+                      <p class="alert alert-primary"></p>
+                      <form id="upload_form" method="post" action="/upload2" enctype="multipart/form-data">
+                       <div class="form-group">
+                              <h4 class="text-primary">client id</h4>
+                              <input placeholder="c1" required
+                                     type="text" name="clientFolderId" class="form-control form-control-sm" value="c2">
+                          </div>
+                          <div class="form-group">
+                              <h4 class="text-primary">select dataset</h4>
+                              <select required id="apiName" name="apiName"
+                                      class="form-control form-control-sm">
+                                  <option value="1">https://www.@.@/dataset 1</option>
+                                  <option value="2">https://www.@.@/dataset 2</option>
+                                  <option value="3">https://www.@.@/dataset 3</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                              <h4 class="text-primary">file name</h4>
+                              <input placeholder="report1.jrxml" required
+                                     type="text" name="reportName" class="form-control form-control-sm">
+                          </div>
+                          <div class="form-group">
+                              <h4 class="text-primary">description</h4>
+                              <input placeholder="write description" required
+                                     type="text" name="description" class="form-control form-control-sm">
+                          </div>
+                          <div class="form-group">
+                              <input required accept=".jrxml"
+                                     type="file" name="file" class="form-control-file">
+                          </div>
+                          <!--type="submit" ,.png,.jpg,.pdf-->
+                          <button id="submit_btn"  type="btn" class="btn btn-primary">Upload File</button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </section>`;
             $("#content_home").show();
         });
-
         $("#view_btn").click(()=>{
             $("#content_home").hide();
             reportFetch();
         });
-
-
-
         $("#submit_btn").click(()=>{
             // (A) GET FORM DATA
             var form = document.getElementById("upload_form");

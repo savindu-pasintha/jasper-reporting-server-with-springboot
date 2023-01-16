@@ -12,6 +12,7 @@ import com.codingboot.entity.DeviceListData;
 import com.codingboot.model.ReportTable;
 import com.codingboot.service.ReportTableService;
 import com.codingboot.entity.Device;
+import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.view.JasperViewer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
 @Controller
 @RestController
+@CrossOrigin(origins = "http://localhost:3005")
 public class InvoiceController {
 
 	@Autowired
@@ -186,6 +188,7 @@ public class InvoiceController {
 
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
 	}
+
 	@GetMapping(value = "/pdf4", produces = MediaType.APPLICATION_PDF_VALUE)
 	public ResponseEntity<byte[]> downloadInvoice4(@RequestParam("name") String name,
 												   @RequestParam("path") String pdfPath,
@@ -508,7 +511,6 @@ public class InvoiceController {
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
 
 	}
-
 	//export as xml report types
 	@GetMapping(value = "/pdf7",
 			consumes="application/json")
@@ -685,6 +687,85 @@ public class InvoiceController {
 
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(data);
 	}
+
+
+	@GetMapping(value = "/report/{report_type}")
+	public ResponseEntity<byte[]> downloadReport(@PathVariable String report_type,
+												 @RequestParam("name") String name,
+												 @RequestParam("path") String pdfSavedFileName,
+												 @RequestParam("clientFolderName") String clientFolderName,
+												 @RequestParam("apiEndPoint") String apiEndPoint) throws JRException, IOException {
+		final Exporter exporter;
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		boolean html = false;
+		JasperReport compileReport = null;
+		String format = report_type;
+		byte [] data = null;
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<DeviceListData> response
+				= restTemplate.getForEntity(env.getProperty("report_data_url"),DeviceListData.class);
+		DeviceListData deviceListData = response.getBody();
+		List<Device> listOfDevice = deviceListData.getData();
+
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfDevice, false);
+
+		//System.out.println("reportLocation : "+reportTable.getPath());
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("total", "9999");
+
+
+		compileReport = JasperCompileManager
+					.compileReport(new FileInputStream(env.getProperty("report_folder_path")+"/"+clientFolderName+"/"+pdfSavedFileName));
+		JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
+
+		switch (format) {
+			case "HTML":
+				exporter = new HtmlExporter();
+				exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
+				html = true;
+				break;
+
+			case "CSV":
+				exporter = new JRCsvExporter();
+				break;
+
+			case "XML":
+				exporter = new JRXmlExporter();
+				break;
+
+			case "XLSX":
+				exporter = new JRXlsxExporter();
+				break;
+
+			case "PDF":
+				exporter = new JRPdfExporter();
+//				data = JasperExportManager.exportReportToPdf(jasperPrint);
+				break;
+
+			case "DOC":
+				exporter = new JRDocxExporter();
+				break;
+
+			default:
+				throw new JRException("Unknown report format: ");
+		}
+
+		if (!html) {
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
+		}
+
+		exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+		exporter.exportReport();
+
+		 data = out.toByteArray();
+
+		//String data  = JasperExportManager.exportReportToXml(jasperPrint);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=report."+report_type.toLowerCase());
+		return ResponseEntity.ok().headers(headers).body(data);
+	}
+
 	//working with iframe
 	@GetMapping(value = "/pdf10", produces = MediaType.APPLICATION_PDF_VALUE)
 	public ResponseEntity<byte[]> downloadInvoice10(@RequestParam("name") String name,
