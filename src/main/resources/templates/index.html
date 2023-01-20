@@ -61,7 +61,9 @@
                             </iframe>`;
             $("#content_home").show();
             console.log(type)
-            await downloadFile(type,name,folderName,fileName);
+            if(type && type != "") {
+                await downloadFile(type, name, folderName, fileName);
+            }
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
             //const raw2 = "{\r\n [\r\n        {\r\n            \"name\": \"J125\",\r\n            \"description\": \"J125 - Jacquard machine\",\r\n            \"parent\": 0,\r\n            \"id\": 1,\r\n            \"enable\": true,\r\n            \"token\": \"J125WFT\"\r\n        },\r\n        {\r\n            \"name\": \"J125 Data logger\",\r\n            \"description\": \"Data logger for Jacquard machine\",\r\n            \"parent\": 1,\r\n            \"id\": 2,\r\n            \"enable\": true,\r\n            \"token\": \"J125DL\"\r\n        }\r\n ]\r\n\r\n}";
@@ -151,10 +153,12 @@
                                       class="form-control-sm" style="height:38px;">
                                   <option >File⬇</option>
                                    <option value="PDF">PDF</option>
-          <option value="DOC">DOC</option>
-          <option value="HTML">HTML</option>
+                                   <option value="HTML">HTML</option>
+                                   <option value="XLSX">XLSX</option>
+<!--          <option value="DOC">DOC</option>-->
+
 <!--          <option value="CSV">CSV</option>-->
-          <option value="XLSX">XLSX</option>
+<!--          <option value="XLSX">XLSX</option>-->
                               </select>
                               <button  class="btn btn-primary" id="openBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.path}">Open</button>
       </div>

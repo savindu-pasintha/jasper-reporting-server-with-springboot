@@ -65,7 +65,7 @@
 		<band height="1" splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="61" splitType="Stretch">
+		<band height="30" splitType="Stretch">
 			<staticText>
 				<reportElement x="-20" y="0" width="100" height="30" forecolor="#F7192B" uuid="9a716150-3d10-4d21-b16d-84d518e80381">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="043260ea-22d7-402b-ac6d-bf471ca787dd"/>
@@ -184,14 +184,62 @@
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band splitType="Stretch"/>
+		<band height="610" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<componentElement>
+				<reportElement x="-5" y="10" width="570" height="340" uuid="ca40ba9e-c8bd-4697-872b-6d5cdeca1d4c"/>
+				<sc:spiderChart xmlns:sc="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<sc:chartSettings>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</sc:chartSettings>
+					<sc:spiderDataset>
+						<dataset resetType="Report"/>
+						<categorySeries>
+							<seriesExpression><![CDATA["SERIES 1"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{parent}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{id}]]></valueExpression>
+							<labelExpression><![CDATA[$F{name}]]></labelExpression>
+						</categorySeries>
+					</sc:spiderDataset>
+					<sc:spiderPlot isWebFilled="true"/>
+				</sc:spiderChart>
+			</componentElement>
+			<xyLineChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="380" width="560" height="200" uuid="d2ff10a0-7541-40ea-86ed-93adcb1f0ffe"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<xyDataset>
+					<dataset resetType="Report"/>
+					<xySeries>
+						<seriesExpression><![CDATA["SERIES 1"]]></seriesExpression>
+						<xValueExpression><![CDATA[$F{parent}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{id}]]></yValueExpression>
+						<labelExpression><![CDATA[$F{name}]]></labelExpression>
+					</xySeries>
+				</xyDataset>
+				<linePlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</linePlot>
+			</xyLineChart>
+		</band>
 	</pageFooter>
 	<summary>
-		<band height="351" splitType="Stretch">
+		<band height="573" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement x="170" y="110" width="200" height="200" uuid="b64bd651-e3a1-43ee-98e5-286fcca0b82e"/>
+					<reportElement x="0" y="50" width="560" height="250" uuid="b64bd651-e3a1-43ee-98e5-286fcca0b82e"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -207,6 +255,37 @@
 					<itemLabel/>
 				</piePlot>
 			</pieChart>
+			<line>
+				<reportElement x="1" y="1" width="588" height="30" uuid="ad6bf47b-3b85-4a09-9801-8862721ed048">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+			</line>
+			<barChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="366" width="560" height="200" uuid="6c2ba12a-39d0-4e31-8da1-5aafa84bf4c9"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Report"/>
+					<categorySeries>
+						<seriesExpression><![CDATA["SERIES 1"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{parent}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{id}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
 		</band>
 	</summary>
 </jasperReport>
