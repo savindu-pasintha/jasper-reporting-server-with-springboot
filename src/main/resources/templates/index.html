@@ -52,10 +52,10 @@
                 })
                 .catch((error) => console.log('error', error))
         }
-        async function reportFetch(type,name,folderName,fileName) {
-            console.log(folderName,fileName)
+        async function reportFetch(type,name,folderName,fileName,apiEndPoint) {
+            console.log(folderName,fileName,apiEndPoint)
              document.getElementById("content_home").innerHTML = `<iframe
-                            src="http://localhost:8082/pdf10?name=${name}&apiEndPoint=apiendpoint&clientFolderName=${folderName}&path=${fileName}"
+                            src="http://localhost:8082/pdf10?name=${name}&apiEndPoint=${apiEndPoint}&clientFolderName=${folderName}&path=${fileName}"
                            width="1100px" height="650px">
                            class="iframe_class"
                             </iframe>`;
@@ -153,14 +153,12 @@
                                       class="form-control-sm" style="height:38px;">
                                   <option >File⬇</option>
                                    <option value="PDF">PDF</option>
-                                   <option value="HTML">HTML</option>
                                    <option value="XLSX">XLSX</option>
-<!--          <option value="DOC">DOC</option>-->
-
+                                   <option value="DOC">DOC</option>
+                                   <option value="HTML">HTML</option>
 <!--          <option value="CSV">CSV</option>-->
-<!--          <option value="XLSX">XLSX</option>-->
                               </select>
-                              <button  class="btn btn-primary" id="openBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.path}">Open</button>
+                              <button  class="btn btn-primary" id="openBtnId" folder="${result[i].clientFolderName}" val="${result[i]?.path}" dataUrl="${result[i]?.apiEndPoint.toLowerCase()}">Open</button>
       </div>
                                    </div>
                       </div>
@@ -186,9 +184,10 @@
         $(document).on("click", "#openBtnId", function(e) {
             let folderName = e.target.attributes.folder.value.toString();
             let fileName =  e.target.attributes.val.value.toString();
+            let apiEndPoint = e.target.attributes.dataUrl.value.toString();
             console.log(folderName,fileName)
-            if(folderName && fileName){
-                reportFetch(document_type,"no",folderName,fileName);
+            if(folderName && fileName && apiEndPoint){
+                reportFetch(document_type,"no",folderName,fileName,apiEndPoint);
             }else{
                 console.error("err in open report: ", e.target.attributes?.path)
             }
@@ -208,13 +207,16 @@
                                      type="text" name="clientFolderId" class="form-control form-control-sm" value="c2">
                           </div>
                           <div class="form-group">
-                              <h4 class="text-primary">select dataset</h4>
-                              <select required id="apiName" name="apiName"
-                                      class="form-control form-control-sm">
-                                  <option value="1">https://www.@.@/dataset 1</option>
-                                  <option value="2">https://www.@.@/dataset 2</option>
-                                  <option value="3">https://www.@.@/dataset 3</option>
-                              </select>
+                              <h4 class="text-primary">Data Url</h4>
+                              <input type="text" required id="apiName" name="apiName"
+                              class="form-control form-control-sm"
+                              >
+<!--                              <select required id="apiName" name="apiName"-->
+<!--                                      class="form-control form-control-sm">-->
+<!--                                  <option value="1">https://www.@.@/dataset 1</option>-->
+<!--                                  <option value="2">https://www.@.@/dataset 2</option>-->
+<!--                                  <option value="3">https://www.@.@/dataset 3</option>-->
+<!--                              </select>-->
                           </div>
                           <div class="form-group">
                               <h4 class="text-primary">file name</h4>

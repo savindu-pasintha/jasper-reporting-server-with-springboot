@@ -8,10 +8,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
-import com.codingboot.entity.DeviceListData;
+import com.codingboot.entity.*;
 import com.codingboot.model.ReportTable;
 import com.codingboot.service.ReportTableService;
-import com.codingboot.entity.Device;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.view.JasperViewer;
@@ -20,12 +19,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import com.codingboot.entity.Products;
-import com.codingboot.entity.Milora;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -767,19 +764,20 @@ public class InvoiceController {
 	}
 
 	//working with iframe
+	@Async
 	@GetMapping(value = "/pdf10", produces = MediaType.APPLICATION_PDF_VALUE)
 	public ResponseEntity<byte[]> downloadInvoice10(@RequestParam("name") String name,
 												   @RequestParam("path") String pdfSavedFileName,
 												   @RequestParam("clientFolderName") String clientFolderName,
 												   @RequestParam("apiEndPoint") String apiEndPoint) throws JRException, IOException {
-		System.out.println(name+"\n"+pdfSavedFileName+"\n"+clientFolderName);
+		System.out.println(name+"\n"+pdfSavedFileName+"\n"+clientFolderName+"\n"+apiEndPoint);
 
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<DeviceListData> response
-				= restTemplate.getForEntity(env.getProperty("report_data_url"),DeviceListData.class);
+		ResponseEntity<DeviceListData> response= restTemplate.getForEntity(apiEndPoint.trim(),DeviceListData.class);
+//		ResponseEntity<DeviceListData> response= restTemplate.getForEntity(env.getProperty("report_data_url"),DeviceListData.class);
 		DeviceListData deviceListData = response.getBody();
 		List<Device> listOfDevice = deviceListData.getData();
-//		System.out.println(listOfDevice.size());
+//		System.out.println(listOfDevice.size()+"\n"+response.getBody().toString());
 
 		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfDevice,true);
 

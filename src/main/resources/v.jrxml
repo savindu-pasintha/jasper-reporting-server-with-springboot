@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="V1 Report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="891438cb-d953-4c2e-8add-e0beab403201">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="V1DataAdapter.jrdax"/>
+	<subDataset name="Dataset1" uuid="6dcad581-28e2-46e9-aa88-4e7c88dcf7d1">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="V1DataAdapter.jrdax"/>
+		<queryString language="json">
+			<![CDATA[data]]>
+		</queryString>
+		<field name="device" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="device"/>
+			<fieldDescription><![CDATA[device]]></fieldDescription>
+		</field>
+		<field name="time" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="time"/>
+			<fieldDescription><![CDATA[time]]></fieldDescription>
+		</field>
+		<field name="state" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="state"/>
+			<fieldDescription><![CDATA[state]]></fieldDescription>
+		</field>
+		<field name="duration" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="duration"/>
+			<fieldDescription><![CDATA[duration]]></fieldDescription>
+		</field>
+		<field name="description" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="description"/>
+			<fieldDescription><![CDATA[description]]></fieldDescription>
+		</field>
+		<group name="device">
+			<groupExpression><![CDATA[$F{device}]]></groupExpression>
+		</group>
+		<group name="time">
+			<groupExpression><![CDATA[$F{time}]]></groupExpression>
+		</group>
+		<group name="state">
+			<groupExpression><![CDATA[$F{state}]]></groupExpression>
+		</group>
+		<group name="duration">
+			<groupExpression><![CDATA[$F{duration}]]></groupExpression>
+		</group>
+		<group name="description">
+			<groupExpression><![CDATA[$F{description}]]></groupExpression>
+		</group>
+	</subDataset>
+	<queryString language="json">
+		<![CDATA[data]]>
+	</queryString>
+	<field name="device" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="device"/>
+		<fieldDescription><![CDATA[device]]></fieldDescription>
+	</field>
+	<field name="time" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="time"/>
+		<fieldDescription><![CDATA[time]]></fieldDescription>
+	</field>
+	<field name="state" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="state"/>
+		<fieldDescription><![CDATA[state]]></fieldDescription>
+	</field>
+	<field name="duration" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="duration"/>
+		<fieldDescription><![CDATA[duration]]></fieldDescription>
+	</field>
+	<field name="description" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="description"/>
+		<fieldDescription><![CDATA[description]]></fieldDescription>
+	</field>
+	<group name="device">
+		<groupExpression><![CDATA[$F{device}]]></groupExpression>
+	</group>
+	<group name="time">
+		<groupExpression><![CDATA[$F{time}]]></groupExpression>
+	</group>
+	<group name="state">
+		<groupExpression><![CDATA[$F{state}]]></groupExpression>
+	</group>
+	<group name="duration">
+		<groupExpression><![CDATA[$F{duration}]]></groupExpression>
+	</group>
+	<group name="description">
+		<groupExpression><![CDATA[$F{description}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="133" splitType="Stretch">
+			<textField textAdjust="ScaleFont">
+				<reportElement x="0" y="0" width="270" height="50" printWhenGroupChanges="time" uuid="c856dbc3-b307-4b42-bcc4-7ab738fe7c2f"/>
+				<textElement textAlignment="Center">
+					<font size="38"/>
+				</textElement>
+				<textFieldExpression><![CDATA["V1 REPORT"]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="440" y="0" width="130" height="130" uuid="7d7306ed-74ca-45b0-85c2-e60fda5c5e1c"/>
+				<cvc:customvisualization xmlns:cvc="http://www.jaspersoft.com/cvcomponent" xsi:schemaLocation="http://www.jaspersoft.com/cvcomponent http://www.jaspersoft.com/cvcomponent/component.xsd">
+					<cvc:itemProperty name="script" value="radial_progress.min.js"/>
+					<cvc:itemProperty name="css" value="radial_progress.css"/>
+					<cvc:itemProperty name="module" value="radial_progress"/>
+					<cvc:itemProperty name="value" value="90"/>
+					<cvc:itemProperty name="target" value="100"/>
+					<cvc:itemProperty name="valueFormat" value=".1%"/>
+					<cvc:itemProperty name="autoFit" value="true"/>
+					<cvc:itemProperty name="fgColor" value="#000000"/>
+					<cvc:itemProperty name="fgOpacity" value="1"/>
+					<cvc:itemProperty name="showBackground" value="true"/>
+					<cvc:itemProperty name="bgColor" value="#000000"/>
+					<cvc:itemProperty name="bgOpacity" value="0.2"/>
+					<cvc:itemProperty name="ringThickness" value="4.0"/>
+					<cvc:itemProperty name="ringPadding" value="4.0"/>
+					<cvc:itemProperty name="maxRings" value="0"/>
+					<cvc:itemProperty name="hPadding" value="10"/>
+					<cvc:itemProperty name="vPadding" value="10"/>
+					<cvc:itemProperty name="animation" value="true"/>
+				</cvc:customvisualization>
+			</componentElement>
+			<textField evaluationTime="Report">
+				<reportElement x="40" y="60" width="100" height="20" forecolor="#9CFC0A" uuid="ccb87754-e905-4cbb-905d-baf675b97f91"/>
+				<textFieldExpression><![CDATA["Total Pages : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="60" width="80" height="20" forecolor="#9CFC0A" uuid="37f8306a-c2fe-4c83-8881-a06f55290265"/>
+				<textFieldExpression><![CDATA["Page No : "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="220" y="61" width="100" height="19" forecolor="#9CFC0A" uuid="c178a340-40d9-4fb8-9724-69ab5b1e58e4"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm">
+				<reportElement x="320" y="61" width="100" height="19" forecolor="#9CFC0A" uuid="09a15cf6-89b9-4b8f-b35f-eccd58468f19"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="83" width="100" height="30" forecolor="#9CFC0A" uuid="70c4da3b-0d46-4106-ac96-44d5963ddf4b"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="140" y="83" width="100" height="30" forecolor="#9CFC0A" uuid="3e8980dc-df01-4536-a6c1-11201360f8db"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression><![CDATA[" of " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="27" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="43" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="-4" width="100" height="30" printWhenGroupChanges="device" forecolor="#FF0C08" uuid="89bea9fc-8e87-4e9c-9182-eac615ea55ca">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="bdc12dc2-e993-4c67-90ed-0e4af65960b9"/>
+				</reportElement>
+				<text><![CDATA[device]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="110" y="0" width="100" height="30" printWhenGroupChanges="device" forecolor="#FF0C08" uuid="f3e956f6-5845-42fb-86b1-702cf85101d1">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="98eab2bf-6e05-46a5-8900-53f861e3c8a2"/>
+				</reportElement>
+				<text><![CDATA[time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="-4" width="100" height="30" printWhenGroupChanges="device" forecolor="#FF0C08" uuid="33f3f9d2-c22f-48f2-a2cd-d0a633894247">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fba8954d-bdc2-428e-83cd-26c6c880700c"/>
+				</reportElement>
+				<text><![CDATA[state]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="330" y="-3" width="100" height="30" printWhenGroupChanges="device" forecolor="#FF0C08" uuid="fb8de04d-716d-458e-98f4-0b7fe57e00f3">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6b467a88-d99e-486a-9cdb-7b877426554e"/>
+				</reportElement>
+				<text><![CDATA[duration]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="440" y="-2" width="100" height="30" printWhenGroupChanges="device" forecolor="#FF0C08" uuid="0f7e986a-c6a9-4304-bdde-8631842086c0">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="faf6907a-6ef1-48c0-8186-ff5e4b95ea49"/>
+				</reportElement>
+				<text><![CDATA[description]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="5" width="100" height="30" uuid="751fe5f5-655f-4617-b9f8-3a3a81611057">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="bdc12dc2-e993-4c67-90ed-0e4af65960b9"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{device}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="7" width="100" height="30" uuid="2e0258fd-057b-44c8-b224-2f8cd29ea22c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="98eab2bf-6e05-46a5-8900-53f861e3c8a2"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{time}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="7" width="100" height="30" uuid="5d2f831a-9835-44b3-91eb-c8d7e43f8b4c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fba8954d-bdc2-428e-83cd-26c6c880700c"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{state}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="330" y="5" width="100" height="30" uuid="50f5875c-5667-4dea-a433-f0d4f837e2eb">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6b467a88-d99e-486a-9cdb-7b877426554e"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{duration}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="440" y="5" width="100" height="30" uuid="69377c9e-1f7e-4b22-bd39-dc07b2659d51">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="faf6907a-6ef1-48c0-8186-ff5e4b95ea49"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="802" splitType="Stretch">
+			<componentElement>
+				<reportElement x="-20" y="-10" width="580" height="812" uuid="9746289e-c87e-4516-b456-963cefa563bd"/>
+				<sc:spiderChart xmlns:sc="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<sc:chartSettings>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</sc:chartSettings>
+					<sc:spiderDataset>
+						<dataset resetType="Report"/>
+						<categorySeries>
+							<seriesExpression><![CDATA["SERIES 1"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{device}]]></categoryExpression>
+							<valueExpression><![CDATA[1000]]></valueExpression>
+						</categorySeries>
+					</sc:spiderDataset>
+					<sc:spiderPlot isWebFilled="true"/>
+				</sc:spiderChart>
+			</componentElement>
+		</band>
+	</summary>
+</jasperReport>

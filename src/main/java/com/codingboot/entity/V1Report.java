@@ -9,16 +9,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Device {
-    int id;
-    int parent;
-    String name;
-    String token;
-    String enable;
+public class V1Report {
     String device;
     String time;
     String state;
     String duration;
     String description;
-
 }
