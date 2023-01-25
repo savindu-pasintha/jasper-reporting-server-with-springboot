@@ -701,7 +701,7 @@ public class InvoiceController {
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<DeviceListData> response
-				= restTemplate.getForEntity(env.getProperty("report_data_url"),DeviceListData.class);
+				= restTemplate.getForEntity(apiEndPoint,DeviceListData.class);
 		DeviceListData deviceListData = response.getBody();
 		List<Device> listOfDevice = deviceListData.getData();
 

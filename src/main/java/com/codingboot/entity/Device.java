@@ -15,10 +15,10 @@ public class Device {
     String name;
     String token;
     String enable;
+
     String device;
     String time;
     String state;
     String duration;
     String description;
-
 }

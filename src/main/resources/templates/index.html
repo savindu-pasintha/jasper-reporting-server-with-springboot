@@ -25,7 +25,7 @@
 <script type="text/javascript">
     $(document).ready(function(){
         let document_type = "";
-        const downloadFile = async (type,name,folderName,fileName) => {
+        const downloadFile = async (type,name,folderName,fileName,apiendpoint) => {
             var requestOptions = {
                 method: 'GET',
                 redirect: 'follow',
@@ -34,7 +34,7 @@
                 //credentials: true, //access-control-allow-credentials:true
             }
 
-           await fetch(`http://localhost:8082/report/${type.toUpperCase()}?name=${name}&apiEndPoint=apiendpoint&clientFolderName=${folderName}&path=${fileName}`,
+           await fetch(`http://localhost:8082/report/${type.toUpperCase()}?name=${name}&apiEndPoint=${apiendpoint}&clientFolderName=${folderName}&path=${fileName}`,
                 requestOptions,
             )
                 .then((response) => response.blob())
@@ -51,6 +51,7 @@
                     window.URL.revokeObjectURL(blobUrl)
                 })
                 .catch((error) => console.log('error', error))
+            document_type = "";
         }
         async function reportFetch(type,name,folderName,fileName,apiEndPoint) {
             console.log(folderName,fileName,apiEndPoint)
@@ -62,7 +63,7 @@
             $("#content_home").show();
             console.log(type)
             if(type && type != "") {
-                await downloadFile(type, name, folderName, fileName);
+                await downloadFile(type, name, folderName, fileName,apiEndPoint);
             }
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
